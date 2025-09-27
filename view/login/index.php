@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema para restaurantes, cevicherias, entre otros</title>
+    <title>CAFETERÍA DOONOBENJI</title>
     <link href='assets/img/restepe.ico' rel='shortcut icon' type='image/x-icon'/>
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/font-awesome/css/font-awesome.css" rel="stylesheet">

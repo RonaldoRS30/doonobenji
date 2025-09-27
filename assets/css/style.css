@@ -330,7 +330,7 @@ body.mini-navbar .navbar-default .nav > li > .nav-second-level li a {
 }
 .navbar-fixed-top,
 .navbar-static-top {
-  background-color: #243c47 !important;
+  background-color: #AA5036 !important;
   border-bottom-color: #ff8833 !important;
   border-bottom-style: solid !important;
   border-bottom-width: 3px !important;
@@ -7773,7 +7773,7 @@ body.skin-2 {
 }
 .skin-2 #side-menu > li > a,
 .skin-2 .nav.nav-second-level > li > a {
-  color: #586b7d;
+  color: #AA5036;
 }
 .skin-2 .nav > li.active > a {
   color: #213a53;
