@@ -598,6 +598,37 @@ class InicioModel
         }
     }
 
+public function InsertarMotivoCancelacion(MotivoCancelacion $data)
+{
+    try {
+        // Consulta SQL para insertar en la tabla motivos_cancelacion
+        $sql = "INSERT INTO tm_motivocancelacion 
+                (cod_pedido, motivo_select, motivo_otro, motivo, usuario) 
+                VALUES 
+                (:cod_pedido, :motivo_select, :motivo_otro, :motivo, :usuario)";
+
+        // Preparar statement
+        $stmt = $this->conexionn->prepare($sql);
+
+        // Asignar parámetros
+        $arrayParam = array(
+            ':cod_pedido'     => $data->__GET('cod_pedido'),
+            ':motivo_select'  => $data->__GET('motivo_select'),
+            ':motivo_otro'    => $data->__GET('motivo_otro'),
+            ':motivo'         => $data->__GET('motivo'),
+            ':usuario'        => $data->__GET('usuario')
+        );
+
+        // Ejecutar
+        $stmt->execute($arrayParam);
+
+    } catch (Exception $e) {
+        die("Error al insertar motivo de cancelación: " . $e->getMessage());
+    }
+}
+
+
+
     public function ListarMozos()
     {
         try

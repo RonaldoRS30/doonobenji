@@ -118,4 +118,11 @@ class TableroModel
             die($e->getMessage());
         }
     }
+
+    public function ListarMotivosCancelacion()
+{
+    $stmt = $this->conexionn->prepare("SELECT cod_pedido, motivo, usuario, fecha_reg FROM tm_motivocancelacion ORDER BY fecha_reg DESC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 }

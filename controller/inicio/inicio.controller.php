@@ -89,6 +89,43 @@ class InicioController{
         echo("<script>location.href = 'inicio.php';</script>");
         //header('Location: inicio.php');
     }
+public function PedidoCancelar(){
+    // Iniciar sesión si no está iniciada
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Obtener datos del POST
+    $cod_pedido     = $_POST['cod_pedido'];
+    $cod_tipe       = isset($_POST['cod_tipe']) ? $_POST['cod_tipe'] : 1; // opcional
+    $motivo_select  = $_POST['motivo_select'];
+    $motivo_otro    = $_POST['motivo_otro'] ?? null;
+    $usuario        = isset($_SESSION['usuario']) ? $_SESSION['usuario'] : 'sistema';
+
+    // Determinar el motivo final a guardar
+    $motivo_final = ($motivo_select === 'otro') ? $motivo_otro : $motivo_select;
+
+    // 1️⃣ Desocupar el pedido
+    $pedido = new Pedido();
+    $pedido->__SET('cod_pede', $cod_pedido);
+    $pedido->__SET('cod_tipe', $cod_tipe);
+    $this->model->Desocupar($pedido);
+
+    // 2️⃣ Insertar motivo de cancelación
+    $motivoObj = new MotivoCancelacion();
+    $motivoObj->__SET('cod_pedido', $cod_pedido);
+    $motivoObj->__SET('motivo_select', $motivo_select);
+    $motivoObj->__SET('motivo_otro', $motivo_otro);
+    $motivoObj->__SET('motivo', $motivo_final); // campo unificado
+    $motivoObj->__SET('usuario', $usuario);
+    $this->model->InsertarMotivoCancelacion($motivoObj);
+
+    // 3️⃣ Redirigir a inicio
+    echo("<script>location.href = 'inicio.php';</script>");
+}
+
+
+
 
     public function CancelarPedido(){
         $alm = new Pedido();

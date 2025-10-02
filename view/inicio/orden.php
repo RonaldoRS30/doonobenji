@@ -406,26 +406,98 @@
 <?php include 'view/inicio/compartido.php' ?>
 
 <div class="modal inmodal fade" id="mdl-desocupar-mesa" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="true">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content animated bounceInRight">
-        <form method="post" enctype="multipart/form-data" action="?c=Inicio&a=Desocupar">
-            <input type="hidden" name="cod_pede" id="cod_pede">
-            <input type="hidden" name="cod_tipe" value="<?php echo $_SESSION["cod_tipe"]; ?>"/>
-            <div class="modal-header mh-p">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
-                <i class="fa fa-sign-out modal-icon"></i>
-            </div>
-            <div class="modal-body">
-                <br><center><h4>¿Desea desocupar la mesa?</h4></center><br>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary"><i class="fa fa-check-square-o"></i> Aceptar</button>
-            </div>
-        </form>
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content animated bounceInRight">
+      <!-- Formulario SOLO para desocupar -->
+      <form method="post" enctype="multipart/form-data" action="?c=Inicio&a=Desocupar">
+        <input type="hidden" name="cod_pede" id="cod_pede">
+        <input type="hidden" name="cod_tipe" value="<?php echo $_SESSION["cod_tipe"]; ?>"/>
+
+        <div class="modal-header mh-p">
+          <button type="button" class="close" data-dismiss="modal">
+            <span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span>
+          </button>
+          <i class="fa fa-sign-out modal-icon"></i>
         </div>
+
+        <div class="modal-body">
+          <br>
+          <center><h4>¿Desea desocupar la mesa?</h4></center>
+          <br>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-check-square-o"></i> Aceptar
+          </button>
+        </div>
+      </form>
+
+        <!-- Botón para cancelar pedido -->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#mdl-cancelar-orden" id="btn-cancelar-pedido">
+                <i class="fa fa-ban"></i> Cancelar Pedido
+            </button>
+
     </div>
+  </div>
 </div>
+
+
+
+<div class="modal fade" id="mdl-cancelar-orden" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="post" action="?c=Inicio&a=PedidoCancelar">
+        <input type="hidden" name="cod_pedido" id="cod_p_cancelar" value="<?php echo $_GET['Cod']; ?>">
+
+        <div class="modal-header">
+          <h4 class="modal-title"><i class="fa fa-ban"></i> Cancelar Pedido</h4>
+        </div>
+
+        <div class="modal-body">
+          <h5><strong>Productos del Pedido</strong></h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Cant.</th>
+                <th>Producto</th>
+                <th>Presentación</th>
+                <th>Precio</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="productos-cancelar"></tbody>
+          </table>
+
+          <div class="form-group">
+            <label>Razón de cancelación:</label>
+            <select name="motivo_select" id="motivo_select" class="form-control" required>
+              <option value="">--Seleccione un motivo--</option>
+              <option value="pedido_frio">Pedido frío</option>
+              <option value="demora_entrega">Demora en entrega</option>
+              <option value="error_producto">Producto equivocado</option>
+              <option value="falta_stock">Falta de stock</option>
+              <option value="pago_rechazado">Pago rechazado</option>
+              <option value="insatisfaccion_cliente">Insatisfacción del cliente</option>
+              <option value="cancelacion_cliente">Cancelación por el cliente</option>
+              <option value="otro">Otro</option>
+            </select>
+
+            <textarea name="motivo_otro" id="motivo_otro" class="form-control mt-2" placeholder="Especifique motivo" style="display:none;"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-danger"><i class="fa fa-ban"></i> Confirmar Cancelación</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 
 <script id="nvo-ped-det-template" type="text/x-jsrender" src="">
     <thead>
@@ -473,4 +545,70 @@
 <script src="assets/js/jquery.email-autocomplete.min.js"></script>
 <script type="text/javascript">
     $('#restau').addClass("active");
+</script>
+
+<script>
+
+      document.getElementById('motivo_select').addEventListener('change', function() {
+    var otro = document.getElementById('motivo_otro');
+    if(this.value === 'otro'){
+      otro.style.display = 'block';
+      otro.required = true;
+    } else {
+      otro.style.display = 'none';
+      otro.required = false;
+    }
+  });
+  
+    function abrirModalCancelar() {
+    var codPedido = $('#cod_p').val();   // <-- asegúrate que este hidden existe en tu vista
+    $("#productos-cancelar").empty();    // limpia tabla
+    $("#cod_p_cancelar").val(codPedido); // setea hidden en modal
+
+    $.ajax({
+        url: '?c=Inicio&a=listarPedidos',
+        type: 'POST',
+        dataType: 'json',
+        data: { cod: codPedido },
+        success: function(data) {
+            var moneda = $("#moneda").val();
+            if (data.length === 0) {
+                $("#productos-cancelar").append('<tr><td colspan="5">No hay productos en este pedido</td></tr>');
+                return;
+            }
+            $.each(data, function(i, item) {
+                var total = (item.cantidad * item.precio).toFixed(2);
+                $("#productos-cancelar").append(
+                    "<tr>"+
+                        "<td>"+item.cantidad+"</td>"+
+                        "<td>"+item.Producto.nombre_prod+"</td>"+
+                        "<td>"+item.Producto.pres_prod+"</td>"+
+                        "<td>"+moneda+formatNumber(item.precio)+"</td>"+
+                        "<td>"+moneda+formatNumber(total)+"</td>"+
+                    "</tr>"
+                );
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error("Error en AJAX:", error);
+            $("#productos-cancelar").append('<tr><td colspan="5">Error al cargar productos</td></tr>');
+        }
+    });
+}
+
+// enganchar función cuando el modal se abre
+$("#mdl-cancelar-orden").on("show.bs.modal", abrirModalCancelar);
+
+
+$("#btn-cancelar-pedido").on("click", function () {
+    // Cerrar el modal de desocupar mesa
+    $("#mdl-desocupar-mesa").modal("hide");
+
+    // Cuando termine de cerrarse, abrir el de cancelar pedido
+    $("#mdl-desocupar-mesa").on("hidden.bs.modal", function () {
+        $("#mdl-cancelar-orden").modal("show");
+        // IMPORTANTE: Desvincular este evento para que no se ejecute varias veces
+        $(this).off("hidden.bs.modal");
+    });
+});
 </script>
