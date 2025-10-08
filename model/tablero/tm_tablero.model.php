@@ -1,5 +1,6 @@
 <?php
-include_once("model/rest.model.php");
+include_once(__DIR__ . "/../rest.model.php");
+
 class TableroModel
 {
 	private $conexionn;
@@ -121,9 +122,19 @@ class TableroModel
 
 public function ListarMotivosCancelacion($fecha_desde = null, $fecha_hasta = null)
 {
-    $sql = "SELECT cod_pedido, motivo, usuario, fecha_reg 
-            FROM tm_motivocancelacion 
-            WHERE 1=1";
+    $sql = "
+        SELECT 
+            cod_pedido,
+            CASE 
+                WHEN motivo = 'otro' AND motivo_otro IS NOT NULL AND motivo_otro != '' 
+                    THEN motivo_otro
+                ELSE motivo
+            END AS motivo,
+            usuario,
+            fecha_reg
+        FROM tm_motivocancelacion
+        WHERE 1=1
+    ";
 
     // Agregar filtros si existen
     if (!empty($fecha_desde)) {
@@ -143,5 +154,6 @@ public function ListarMotivosCancelacion($fecha_desde = null, $fecha_hasta = nul
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 
 }
