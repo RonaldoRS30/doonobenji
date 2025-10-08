@@ -119,10 +119,29 @@ class TableroModel
         }
     }
 
-    public function ListarMotivosCancelacion()
+public function ListarMotivosCancelacion($fecha_desde = null, $fecha_hasta = null)
 {
-    $stmt = $this->conexionn->prepare("SELECT cod_pedido, motivo, usuario, fecha_reg FROM tm_motivocancelacion ORDER BY fecha_reg DESC");
+    $sql = "SELECT cod_pedido, motivo, usuario, fecha_reg 
+            FROM tm_motivocancelacion 
+            WHERE 1=1";
+
+    // Agregar filtros si existen
+    if (!empty($fecha_desde)) {
+        $sql .= " AND DATE(fecha_reg) >= :desde";
+    }
+    if (!empty($fecha_hasta)) {
+        $sql .= " AND DATE(fecha_reg) <= :hasta";
+    }
+
+    $sql .= " ORDER BY fecha_reg DESC";
+
+    $stmt = $this->conexionn->prepare($sql);
+
+    if (!empty($fecha_desde)) $stmt->bindParam(':desde', $fecha_desde);
+    if (!empty($fecha_hasta)) $stmt->bindParam(':hasta', $fecha_hasta);
+
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 }

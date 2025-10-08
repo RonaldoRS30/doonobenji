@@ -258,135 +258,194 @@
 </div>
 
 <div class="modal fade" id="mdl-motivos-cancelacion" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title"><i class="fa fa-ban"></i> Motivos de Pedidos Cancelados</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <table id="tabla-motivos" class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th># Pedido</th>
-                    <th>Motivo</th>
-                    <th>Usuario</th>
-                    <th>Fecha</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Aquí se llenará con DataTable o PHP -->
-            </tbody>
-        </table>
-        
-        <!-- Contenedor para texto motivo más frecuente -->
-        <div id="motivo-mas-frecuente" style="margin-top: 10px; font-weight: bold;"></div>
+  <div class="modal-dialog modal-xxl" role="document"> <!-- Más ancho -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><i class="fa fa-ban"></i> Motivos de Pedidos Cancelados</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
 
-        <!-- Lienzo para gráfico de pastel -->
-        <!-- Contenedor para gráficos centrado -->
-<div style="text-align:center; margin-top:20px;">
-  <canvas id="grafico-motivos" width="450" height="300" style="background-color:white; margin: 0 auto; display: block;"></canvas>
+      <div class="modal-body">
+        <!-- Filtros de fecha -->
+        <div class="row mb-3 align-items-end">
+          <div class="col-md-3">
+            <label>Desde:</label>
+            <input type="date" id="fecha_desde" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label>Hasta:</label>
+            <input type="date" id="fecha_hasta" class="form-control">
+          </div>
+          <div class="col-md-6 text-right">
+            <div class="btn-group w-100" role="group">
+              <button class="btn btn-primary" id="btn-filtrar-fechas">
+                <i class="fa fa-search"></i> Filtrar
+              </button>
+              <button class="btn btn-secondary" id="btn-limpiar-filtros">
+                <i class="fa fa-eraser"></i> Limpiar filtros
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla -->
+        <table id="tabla-motivos" class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th># Pedido</th>
+              <th>Motivo</th>
+              <th>Usuario</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <!-- Motivo más frecuente -->
+        <div id="motivo-mas-frecuente" style="margin-top: 10px; font-weight: bold;"></div>
+
+        <!-- Gráfico -->
+        <div style="text-align:center; margin-top:20px;">
+          <canvas id="grafico-motivos" width="450" height="300" style="background-color:white; margin: 0 auto; display: block;"></canvas>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
 </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Asegúrate de incluir Chart.js -->
 
 <script>
 $(document).ready(function() {
 
+  // Abrir modal
   $('#btn-motivos-cancelacion').click(function() {
     $('#mdl-motivos-cancelacion').modal('show');
 
+    // Cargar DataTable solo la primera vez
     if (!$.fn.DataTable.isDataTable('#tabla-motivos')) {
-      $('#tabla-motivos').DataTable({
-        ajax: {
-          url: '?c=Tablero&a=ListarMotivosCancelacion',
-          type: 'POST',
-          dataSrc: function(json) {
-            // Actualizar texto motivo más frecuente
-            $('#motivo-mas-frecuente').text('Motivo más recurrente: ' + json.summary.mostFrequent);
-
-            // Preparar canvas con fondo blanco antes de crear gráfico
-            var canvas = document.getElementById('grafico-motivos');
-            var ctx = canvas.getContext('2d');
-            ctx.save();
-            ctx.globalCompositeOperation = 'destination-over';
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.restore();
-
-            // Destruir gráfico anterior si existe
-            if (window.graficoMotivos) {
-              window.graficoMotivos.destroy();
-            }
-
-            // Crear gráfico de pastel
-            window.graficoMotivos = new Chart(ctx, {
-              type: 'pie',
-              data: {
-                labels: Object.keys(json.summary.counts),
-                datasets: [{
-                  data: Object.values(json.summary.counts),
-                  backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#8AFF33', '#FF5733']
-                }]
-              },
-              options: {
-                responsive: false,
-                plugins: {
-                  legend: { position: 'top' }
-                }
-              }
-            });
-
-            return json.data;
-          }
-        },
-        columns: [
-          { data: 'cod_pedido', title: '# Pedido' },
-          { data: 'motivo', title: 'Motivo' },
-          { data: 'usuario', title: 'Usuario' },
-          { data: 'fecha_reg', title: 'Fecha' }
-        ],
-        responsive: true,
-        autoWidth: false,
-        scrollX: false,
-        pageLength: 10,
-        dom: 'Bfrtip',
-        buttons: [{
-          extend: 'pdfHtml5',
-          text: 'Generar PDF',
-          title: 'Motivos de Pedidos Cancelados',
-          exportOptions: { columns: ':visible' },
-          customize: function(doc) {
-            doc.pageMargins = [40, 60, 40, 60];
-            doc.defaultStyle.fontSize = 12;
-            doc.content[1].table.widths = ['15%', '45%', '20%', '20%'];
-            doc.content[0].alignment = 'center';
-            doc.content[0].fontSize = 16;
-            doc.content[0].bold = true;
-
-            doc.content.push({
-              text: 'Motivo más recurrente: ' + $('#motivo-mas-frecuente').text().replace('Motivo más recurrente: ', ''),
-              margin: [0, 20, 0, 10],
-              fontSize: 12,
-              bold: true
-            });
-
-            // OMITIR la inserción del gráfico para evitar el error de pdfMake
-          }
-        }]
-      });
+      inicializarTablaMotivos();
     } else {
       $('#tabla-motivos').DataTable().ajax.reload();
     }
   });
 
+  // 🔍 Evento para filtrar por fecha
+  $('#btn-filtrar-fechas').on('click', function() {
+    // Si la tabla ya está creada, recargamos con las fechas
+    if ($.fn.DataTable.isDataTable('#tabla-motivos')) {
+      $('#tabla-motivos').DataTable().ajax.reload();
+    } else {
+      inicializarTablaMotivos();
+    }
+  });
+
+  // 🔧 Función que inicializa o reinicia la DataTable
+  function inicializarTablaMotivos() {
+    $('#tabla-motivos').DataTable({
+      destroy: true, // permite reiniciar
+      ajax: {
+        url: '?c=Tablero&a=ListarMotivosCancelacion',
+        type: 'POST',
+        data: function(d) {
+          // Enviar las fechas seleccionadas al backend
+          d.fecha_desde = $('#fecha_desde').val();
+          d.fecha_hasta = $('#fecha_hasta').val();
+        },
+        dataSrc: function(json) {
+          // Actualizar texto motivo más frecuente
+          $('#motivo-mas-frecuente').text(
+            'Motivo más recurrente: ' + (json.summary.mostFrequent || 'Ninguno')
+          );
+
+          // Preparar canvas con fondo blanco
+          var canvas = document.getElementById('grafico-motivos');
+          var ctx = canvas.getContext('2d');
+          ctx.save();
+          ctx.globalCompositeOperation = 'destination-over';
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.restore();
+
+          // Destruir gráfico anterior si existe
+          if (window.graficoMotivos) {
+            window.graficoMotivos.destroy();
+          }
+
+          // Crear nuevo gráfico
+          window.graficoMotivos = new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: Object.keys(json.summary.counts),
+              datasets: [{
+                data: Object.values(json.summary.counts),
+                backgroundColor: [
+                  '#FF6384', '#36A2EB', '#FFCE56', '#8AFF33', '#FF5733',
+                  '#C70039', '#900C3F', '#581845'
+                ]
+              }]
+            },
+            options: {
+              responsive: false,
+              plugins: { legend: { position: 'top' } }
+            }
+          });
+
+          return json.data;
+        }
+      },
+      columns: [
+        { data: 'cod_pedido', title: '# Pedido' },
+        { data: 'motivo', title: 'Motivo' },
+        { data: 'usuario', title: 'Usuario' },
+        { data: 'fecha_reg', title: 'Fecha' }
+      ],
+      responsive: true,
+      autoWidth: false,
+      scrollX: false,
+      pageLength: 10,
+      dom: 'Bfrtip',
+      buttons: [{
+        extend: 'pdfHtml5',
+        text: 'Generar PDF',
+        title: 'Motivos de Pedidos Cancelados',
+        exportOptions: { columns: ':visible' },
+        customize: function(doc) {
+          doc.pageMargins = [40, 60, 40, 60];
+          doc.defaultStyle.fontSize = 12;
+          doc.content[1].table.widths = ['15%', '45%', '20%', '20%'];
+          doc.content[0].alignment = 'center';
+          doc.content[0].fontSize = 16;
+          doc.content[0].bold = true;
+
+          doc.content.push({
+            text: 'Motivo más recurrente: ' + 
+              $('#motivo-mas-frecuente').text().replace('Motivo más recurrente: ', ''),
+            margin: [0, 20, 0, 10],
+            fontSize: 12,
+            bold: true
+          });
+        }
+      }]
+    });
+  }
+
+});
+
+// Botón para limpiar filtros
+$('#btn-limpiar-filtros').click(function() {
+  $('#fecha_desde').val('');
+  $('#fecha_hasta').val('');
+
+  // Recargar tabla sin filtros
+  if ($.fn.DataTable.isDataTable('#tabla-motivos')) {
+    $('#tabla-motivos').DataTable().ajax.reload();
+  }
 });
 
 </script>

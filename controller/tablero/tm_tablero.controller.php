@@ -27,28 +27,35 @@ class TableroController{
 
 public function ListarMotivosCancelacion()
 {
-    $motivos = $this->model->ListarMotivosCancelacion();
+    $fecha_desde = isset($_POST['fecha_desde']) ? $_POST['fecha_desde'] : null;
+    $fecha_hasta = isset($_POST['fecha_hasta']) ? $_POST['fecha_hasta'] : null;
 
-    // Contar frecuencia de cada motivo
+    $motivos = $this->model->ListarMotivosCancelacion($fecha_desde, $fecha_hasta);
+
+    $motivoTextos = [
+        'pedido_frio' => 'Pedido frío',
+        'demora_entrega' => 'Demora en entrega',
+        'error_producto' => 'Producto equivocado',
+        'falta_stock' => 'Falta de stock',
+        'pago_rechazado' => 'Pago rechazado',
+        'insatisfaccion_cliente' => 'Insatisfacción del cliente',
+        'cancelacion_cliente' => 'Cancelación por el cliente',
+        'otro' => 'Otro'
+    ];
+
     $counts = [];
-    foreach ($motivos as $m) {
-        if (!isset($counts[$m['motivo']])) {
-            $counts[$m['motivo']] = 0;
-        }
-        $counts[$m['motivo']]++;
+    foreach ($motivos as &$m) {
+        $m['motivo'] = $motivoTextos[$m['motivo']] ?? ucfirst(str_replace('_', ' ', $m['motivo']));
+        $counts[$m['motivo']] = ($counts[$m['motivo']] ?? 0) + 1;
     }
 
-    // Encontrar motivo más frecuente
+    // ✅ Verificamos si $counts tiene datos antes de usar max()
     $mostFrequent = null;
-    $maxCount = 0;
-    foreach ($counts as $motivo => $count) {
-        if ($count > $maxCount) {
-            $maxCount = $count;
-            $mostFrequent = $motivo;
-        }
+    if (!empty($counts)) {
+        $maxCount = max($counts);
+        $mostFrequent = array_keys($counts, $maxCount)[0];
     }
 
-    // Devolver JSON para DataTable con datos y resumen
     echo json_encode([
         'data' => $motivos,
         'summary' => [
@@ -57,6 +64,8 @@ public function ListarMotivosCancelacion()
         ]
     ]);
 }
+
+
 
 
 
