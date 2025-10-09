@@ -44,8 +44,17 @@ foreach($de as $reg) {
      $h = 5;
      }else{
      */
-    $pathimagen = "assets/img";
-    $pdf->Image($pathimagen."/". $reg['logo'], 5, 6, 65, 15);
+$pathimagen = "assets/img";
+$archivo = $pathimagen . "/" . $reg['logo'] . ".png"; // <-- agregamos .png
+
+if(file_exists($archivo)){
+    $pdf->Image($archivo, 5, 6, 65, 15, 'PNG');
+} else {
+    echo "No se encontró la imagen: $archivo";
+    exit;
+}
+
+
     $h = 22;
     $pdf->SetXY(5, $h);//modificar solo esto
     $pdf->CellFitScale(64, 3,utf8_decode(str_replace("&amp;", "&", $reg['raz_soc']) ), 0, 1, 'C');
