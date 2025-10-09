@@ -25,7 +25,7 @@
                         <select class="selectpicker show-tick form-control cb_tpuser" id="cb_tpuser" name="txt_rol"  data-live-search-style="begins" data-live-search="true" title="Seleccionar Rol de Usuario" autocomplete="off">
                             <option value="1" title="Rol: ADMINISTRADROR">ADMINISTRADOR</option>
                             <option value="2" title="Rol: CAJA">CAJA</option>
-                            <option value="3" title="Rol: AREA DE PRODUCCION">AREA DE PRODUCCION</option>
+                            <option value="3" title="Rol: AREA DE COCINA">ÁREA DE COCINA</option>
                             <option value="4" title="Rol: MOZO">MOZO</option>
                           </select>
                     </div>
