@@ -5,7 +5,7 @@ class Database
     {        
         try
 			{
-				$conexionn = new PDO('mysql:host=localhost;dbname=restaurantefe;charset=utf8', 'root', '');
+				$conexionn = new PDO('mysql:host=localhost;dbname=doono_new;charset=utf8', 'root', '');
 	        	$conexionn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);	
 	        	return $conexionn;  
 			}
