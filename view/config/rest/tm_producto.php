@@ -253,6 +253,14 @@
                                 </div>
                             </div>
                         </div>
+                          <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label class="control-label">TIEMPO ESTANDÁR DE PREPARACI&Oacute;N</label>
+                                        <input type="text" name="tiempostandar" id="tiempostandar" class="form-control" autocomplete="off" required="required" />
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-sm-6" id="tp-1" style="display: none">
                                 <div class="checkbox checkbox-success">
@@ -285,7 +293,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-white" data-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar</button>
+                <button type="submit" class="btn btn-primary" id="btn_guardar"><i class="fa fa-save" ></i> Guardar</button>
             </div>
         </form>
         </div>

@@ -75,14 +75,29 @@ class ConfigController{
         }
     }
 
-    public function CrudPres()
-    {    
-        if($_POST['cod_pres'] != ''){
-           print_r(json_encode($this->model->UPres($_POST)));
-        } else{
-           print_r(json_encode($this->model->CPres($_POST)));
-        }
+public function CrudPres()
+{    
+    $data = $_POST;
+
+    // Verificamos si se trata de una actualización o inserción
+    if(!empty($data['cod_pres'])){
+        $result = $this->model->UPres($data);
+    } else {
+        $result = $this->model->CPres($data);
     }
+
+    if($result){
+        echo json_encode([
+            'success' => true,
+            'message' => !empty($data['cod_pres']) ? 'Presentación actualizada correctamente.' : 'Presentación registrada correctamente.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'No se pudo completar la operación.'
+        ]);
+    }
+}
 
     public function CrudCatg()
     {

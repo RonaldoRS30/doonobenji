@@ -41,11 +41,14 @@
                                     <div class="col-xs-1 col-md-1" style="text-align: center;">
                                         <strong>MESA</strong>
                                     </div>
-                                    <div class="col-xs-4 col-md-4">
+                                    <div class="col-xs-4 col-md-2">
                                         <strong>CANT/PRODUCTO</strong>
                                     </div>
                                     <div class="col-xs-2 col-md-2" style="text-align: center;">
                                         <strong>HORA DE PEDIDO</strong>
+                                    </div>
+                                     <div class="col-xs-2 col-md-2" style="text-align: center;">
+                                        <strong>TEMPORIZADOR</strong>
                                     </div>
                                     <div class="col-xs-2 col-md-2" style="text-align: center;">
                                         <strong>ESTADO</strong>
@@ -72,11 +75,14 @@
                                     <div class="col-xs-1 col-md-1" style="text-align: center;">
                                         <strong>PEDIDO</strong>
                                     </div>
-                                    <div class="col-xs-4 col-md-4">
+                                    <div class="col-xs-4 col-md-2">
                                         <strong>CANT/PRODUCTO</strong>
                                     </div>
                                     <div class="col-xs-2 col-xs-2 col-md-2" style="text-align: center;">
                                         <strong>HORA DE PEDIDO</strong>
+                                    </div>
+                                     <div class="col-xs-4 col-md-2"style="text-align: center;">
+                                        <strong>TEMPORIZADOR</strong>
                                     </div>
                                     <div class="col-xs-2 col-md-2" style="text-align: center;">
                                         <strong>ESTADO</strong>
@@ -103,11 +109,14 @@
                                     <div class="col-xs-1 col-md-1" style="text-align: center;">
                                         <strong>PEDIDO</strong>
                                     </div>
-                                    <div class="col-xs-4 col-md-4">
+                                    <div class="col-xs-4 col-md-2">
                                         <strong>CANT/PRODUCTO</strong>
                                     </div>
                                     <div class="col-xs-2 col-md-2" style="text-align: center;">
                                         <strong>HORA DE PEDIDO</strong>
+                                    </div>
+                                     <div class="col-xs-4 col-md-2"style="text-align: center;">
+                                        <strong>TEMPORIZADOR</strong>
                                     </div>
                                     <div class="col-xs-2 col-md-2" style="text-align: center;">
                                         <strong>ESTADO</strong>

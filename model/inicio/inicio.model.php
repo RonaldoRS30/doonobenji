@@ -404,7 +404,7 @@ class InicioModel
             setlocale(LC_ALL,"es_ES@euro","es_ES","esp");
             $fecha = date("Y-m-d H:i:s");
             $id_usu = $_SESSION["id_usu"];
-            $consulta = "call usp_restRegDelivery( :flag, :idTp, :idUsu, :fechaP, :nombC, :dirC, :telfC, :comen);";
+            $consulta = "call usp_restRegDelivery( :flag, :idTp, :idUsu, :fechaP, :nombC, :dirC, :motorC , :telfC, :comen);";
             $arrayParam =  array(
                 ':flag' => 1,
                 ':idTp' => 3,
@@ -412,6 +412,7 @@ class InicioModel
                 ':fechaP' => $fecha,
                 ':nombC' => $data->__GET('nombCli'),
                 ':dirC' => $data->__GET('direcCli'),
+                ':motorC' => $data->__GET('motorizado'),
                 ':telfC' => $data->__GET('telefCli'),
                 ':comen' => $data->__GET('comentario')
             );
@@ -489,6 +490,8 @@ class InicioModel
         }
     }
 
+
+    
     public function CancelarPedido($data)
     {
         try 

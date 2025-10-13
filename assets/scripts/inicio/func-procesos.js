@@ -244,7 +244,7 @@ var add = function(id_areap,id_pres,nombre_prod,pres_prod,precio,nombre_imp){
     }
     $("#btn-confirmar").removeAttr('disabled');
 };
-
+//este es el que envía 
 $("#btn-confirmar").on("click", function(){
     $("#btn-confirmar").attr('disabled','true');
     if(pedido.detalle.items.length == 0)

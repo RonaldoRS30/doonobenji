@@ -19,6 +19,11 @@ class AreaProdController{
         print_r(json_encode($this->model->ListarM()));
     }
 
+public function InsertarPedidoRetraso(){
+    echo json_encode($this->model->InsertarPedidoRetraso());
+}
+
+
     public function ListarMO(){
         print_r(json_encode($this->model->ListarMO()));
     }

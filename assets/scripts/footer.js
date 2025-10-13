@@ -96,7 +96,7 @@ var listarPedidosPreparados = function(){
         }
     });
 }
-
+//ESTE ES PARA DESPACHADO
 var pedidoEntregado = function(id_pedido,id_pres,fecha_pedido){
     $.ajax({
         dataType: 'JSON',

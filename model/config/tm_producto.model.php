@@ -37,29 +37,42 @@ class ConfigModel
         }
     }
 
-    public function ListaPres()
+public function ListaPres()
+{
+    try
     {
-        try
+        // Obtener valores POST, con fallback a '%' si no existen
+        $cod_prod = isset($_POST['cod_prod']) && $_POST['cod_prod'] !== '' ? $_POST['cod_prod'] : '%';
+        $cod_pres = isset($_POST['cod_pres']) && $_POST['cod_pres'] !== '' ? $_POST['cod_pres'] : '%';
+
+        // Preparar consulta
+        $stm = $this->conexionn->prepare("SELECT * FROM tm_producto_pres WHERE id_prod LIKE ? AND id_pres LIKE ?");
+        $stm->execute(array($cod_prod, $cod_pres));
+
+        // Obtener resultados
+        $c = $stm->fetchAll(PDO::FETCH_OBJ);
+
+        // Agregar tipo de producto
+        foreach($c as $k => $d)
         {
-            $cod_prod = $_POST['cod_prod'];
-            $cod_pres = $_POST['cod_pres'];
-            $stm = $this->conexionn->prepare("SELECT * FROM tm_producto_pres WHERE id_prod LIKE ? AND id_pres LIKE ?");
-            $stm->execute(array($cod_prod,$cod_pres));
-            $c = $stm->fetchAll(PDO::FETCH_OBJ);
-            foreach($c as $k => $d)
-            {
-                $c[$k]->{'TipoProd'} = $this->conexionn->query("SELECT id_tipo FROM tm_producto WHERE id_prod = ".$d->id_prod)
-                ->fetch(PDO::FETCH_OBJ);
-            }
-            $data = array("data" => $c);
-            $json = json_encode($data);
-            echo $json; 
+            $tipoProdStmt = $this->conexionn->prepare("SELECT id_tipo FROM tm_producto WHERE id_prod = ?");
+            $tipoProdStmt->execute(array($d->id_prod));
+            $c[$k]->TipoProd = $tipoProdStmt->fetch(PDO::FETCH_OBJ);
         }
-        catch(Exception $e)
-        {
-            die($e->getMessage());
-        }
+
+        // Devolver JSON
+        echo json_encode(array("data" => $c));
+
     }
+    catch(Exception $e)
+    {
+        echo json_encode(array(
+            "success" => false,
+            "message" => "Error al listar presentaciones: " . $e->getMessage()
+        ));
+    }
+}
+
 
     public function ListaCatgs()
     {
@@ -246,123 +259,99 @@ class ConfigModel
         }
     }
 
-    public function CPres($data)
-    {
-        try 
-        {
-            if( !empty( $_FILES['imagen']['name'] ) ){
-                switch ($_FILES['imagen']['type']) 
-                { 
-                    case 'image/jpeg': 
-                    $ext = "jpg"; 
-                    break;
-                    case 'image/gif': 
-                    $ext = "gif"; 
-                    break; 
-                    case 'image/png': 
-                    $ext = "png"; 
-                    break;
-                    case 'application/pdf':
-                    $ext = "pdf";
-                    break;
-                }
-                $imagen = date('ymdhis').'.'.$ext;
-                move_uploaded_file ($_FILES['imagen']['tmp_name'], 'assets/img/productos/'.$imagen);
-            } else {
-                $imagen = $data['imagen'];
-            }
-            $consulta = "call usp_configProductoPres( :flag, :idProd, :codP, :presP, :precio, :rec, :stock, :estado, :img, @a);";
-			$receta = 0;
-			$stockmin = 0;
-			if($data['id_receta'] != '' and $data['id_receta'] != null){
-				$receta = $data['id_receta'];
-			}
-			
-			if($data['stock_min'] != '' and $data['stock_min'] != null){
-				$stockmin = $data['stock_min'];
-			}
-			
-            $arrayParam =  array(
-                ':flag' => 1,
-                ':idProd' => $data['cod_producto'],
-                ':codP' => $data['cod_produ'],
-                ':presP' => $data['nombre_pres'],
-                ':precio' => $data['precio_prod'],
-                ':rec' => $receta,
-                ':stock' => $stockmin,
-                ':estado' => $data['estado_pres'],
-                ':img' => $imagen
-            );
-            $st = $this->conexionn->prepare($consulta);
-            $st->execute($arrayParam);
-            while ($row = $st->fetch(PDO::FETCH_ASSOC)) {
-                return $row['cod'];
-            }
+public function CPres($data)
+{
+    try {
+        // --- Procesar imagen ---
+        if (!empty($_FILES['imagen']['name'])) {
+            $ext = pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION);
+            $imagen = date('ymdhis') . '.' . $ext;
+            move_uploaded_file($_FILES['imagen']['tmp_name'], 'assets/img/productos/' . $imagen);
+        } else {
+            $imagen = $data['imagen'] ?? 'default.png';
         }
-        catch (Exception $e) 
-        {
-            return false;
-        }
-    }
 
-    public function UPres($data)
-    {
-        try 
-        {
-            if( !empty( $_FILES['imagen']['name'] ) ){
-                switch ($_FILES['imagen']['type']) 
-                { 
-                    case 'image/jpeg': 
-                    $ext = "jpg"; 
-                    break;
-                    case 'image/gif': 
-                    $ext = "gif"; 
-                    break; 
-                    case 'image/png': 
-                    $ext = "png"; 
-                    break;
-                    case 'application/pdf':
-                    $ext = "pdf";
-                    break;
-                }
-                $imagen = date('ymdhis').'.'.$ext;
-                move_uploaded_file ($_FILES['imagen']['tmp_name'], 'assets/img/productos/'.$imagen);
-            } else {
-                $imagen = $data['imagen'];
-            }
-            $consulta = "call usp_configProductoPres( :flag, :idProd, :codP, :presP, :precio, :rec, :stock, :estado, :img, :idPres);";
-			$receta = 0;
-			$stockmin = 0;
-			if($data['id_receta'] != '' and $data['id_receta'] != null){
-				$receta = $data['id_receta'];
-			}
-			
-			if($data['stock_min'] != '' and $data['stock_min'] != null){
-				$stockmin = $data['stock_min'];
-			}
-            $arrayParam =  array(
-                ':flag' => 2,
-                ':idProd' => $data['cod_producto'],
-                ':codP' => $data['cod_produ'],
-                ':presP' => $data['nombre_pres'],
-                ':precio' => $data['precio_prod'],
-                ':rec' => $receta,
-                ':stock' => $stockmin,
-                ':estado' => $data['estado_pres'],
-                ':img' => $imagen,
-                ':idPres' => $data['cod_pres']
-            );
-            $st = $this->conexionn->prepare($consulta);
-            $st->execute($arrayParam);
-            while ($row = $st->fetch(PDO::FETCH_ASSOC)) {
-                return $row['cod'];
-            }
-        }
-        catch (Exception $e) 
-        {
-            return false;
-        }
+        // --- Variables limpias ---
+        $receta = !empty($data['id_receta']) ? $data['id_receta'] : 0;
+        $stockmin = !empty($data['stock_min']) ? $data['stock_min'] : 0;
+        $tiempostandar = !empty($data['tiempostandar']) ? $data['tiempostandar'] : 0;
+
+        // --- Insert SQL ---
+        $sql = "INSERT INTO tm_producto_pres 
+                (id_prod, cod_prod, presentacion, precio, receta, stock_min, tiempostandar, estado, imagen)
+                VALUES 
+                (:idProd, :codP, :presP, :precio, :rec, :stock, :tiempostandar, :estado, :img)";
+        
+        $stmt = $this->conexionn->prepare($sql);
+        $stmt->execute([
+            ':idProd' => $data['cod_producto'],
+            ':codP' => $data['cod_produ'],
+            ':presP' => $data['nombre_pres'],
+            ':precio' => $data['precio_prod'],
+            ':rec' => $receta,
+            ':stock' => $stockmin,
+            ':tiempostandar' => $tiempostandar,
+            ':estado' => $data['estado_pres'],
+            ':img' => $imagen
+        ]);
+
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        error_log("Error CPres: " . $e->getMessage());
+        return false;
     }
+}
+
+public function UPres($data)
+{
+    try {
+        // --- Procesar imagen ---
+        if (!empty($_FILES['imagen']['name'])) {
+            $ext = pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION);
+            $imagen = date('ymdhis') . '.' . $ext;
+            move_uploaded_file($_FILES['imagen']['tmp_name'], 'assets/img/productos/' . $imagen);
+        } else {
+            $imagen = $data['imagen'] ?? 'default.png';
+        }
+
+        // --- Variables limpias ---
+        $receta = !empty($data['id_receta']) ? $data['id_receta'] : 0;
+        $stockmin = !empty($data['stock_min']) ? $data['stock_min'] : 0;
+        $tiempostandar = !empty($data['tiempostandar']) ? $data['tiempostandar'] : 0;
+
+        // --- Update SQL ---
+        $sql = "UPDATE tm_producto_pres 
+                SET id_prod = :idProd,
+                    cod_prod = :codP,
+                    presentacion = :presP,
+                    precio = :precio,
+                    receta = :rec,
+                    stock_min = :stock,
+                    tiempostandar = :tiempostandar,
+                    estado = :estado,
+                    imagen = :img
+                WHERE id_pres = :idPres";
+        
+        $stmt = $this->conexionn->prepare($sql);
+        $stmt->execute([
+            ':idProd' => $data['cod_producto'],
+            ':codP' => $data['cod_produ'],
+            ':presP' => $data['nombre_pres'],
+            ':precio' => $data['precio_prod'],
+            ':rec' => $receta,
+            ':stock' => $stockmin,
+            ':tiempostandar' => $tiempostandar,
+            ':estado' => $data['estado_pres'],
+            ':img' => $imagen,
+            ':idPres' => $data['cod_pres']
+        ]);
+
+        return $stmt->rowCount() > 0;
+    } catch (Exception $e) {
+        error_log("Error UPres: " . $e->getMessage());
+        return false;
+    }
+}
 
     public function ComboCatg()
     {

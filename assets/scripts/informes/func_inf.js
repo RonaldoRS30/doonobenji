@@ -14,6 +14,7 @@ $(".ventas").click(function() {
 				.append('<a class="list-group-item" href="lista_inf_productos.php">Ventas por producto</a>')
 				.append('<a class="list-group-item" href="lista_inf_mozos.php">Ventas por mesero</a>')
 				.append('<a class="list-group-item" href="lista_inf_fpago.php">Ventas por forma de pago</a>')
+				.append('<a class="list-group-item" href="lista_inf_pedidoretraso.php">Pedidos entregados con retraso</a>')
 				)
 			)
 		)

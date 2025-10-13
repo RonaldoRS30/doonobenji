@@ -78,41 +78,43 @@ var listarProductos = function(cat){
 }
 
 /* Listar presentaciones de cada producto seleccionado */
-var listarPresentaciones = function(cod_prod,nomb){
+var listarPresentaciones = function(cod_prod, nomb){
     var moneda = $("#moneda").val();
-    var cat = '%';
+    
     $.ajax({
         type: "POST",
         url: "?c=Config&a=ListaPres",
-        data: {
-            cod_prod: cod_prod,
-            cod_pres: cat
-        },
+        data: { cod_prod: cod_prod },
         dataType: "json",
-        success: function(item){
-        $('#head-p').html('<a class="btn btn-primary btn-block btn-nuvpres" onclick="nuevaPresentacion('+cod_prod+',\''+nomb+'\')"><i class="fa fa-plus-circle"></i> Agregar presentaci&oacute;n </a>');
-        $('#body-c').html('<br><strong class="ich">Presentaciones de '+nomb+'</strong><br><br>');
-            if (item.data.length != 0) {
+        success: function(resp){
+            $('#head-p').html('<a class="btn btn-primary btn-block btn-nuvpres" onclick="nuevaPresentacion('+cod_prod+',\''+nomb+'\')"><i class="fa fa-plus-circle"></i> Agregar presentaci&oacute;n</a>');
+            $('#body-c').html('<br><strong class="ich">Presentaciones de '+nomb+'</strong><br><br>');
+
+            if(resp.data && resp.data.length > 0){
                 $('#body-p').empty();
-                $.each(item.data, function(i, campo) {
-                    if(campo.estado == 'a'){
-                        var boxpres = '';
-                    }else{
-                        var boxpres = 'boxpres';
-                    }
-                    $('#body-p')
-                    .append(
-                      $('<div class="ibox ibox-cr"/>')
-                        .html('<a onclick="editarPresentacion('+campo.id_pres+',\''+nomb+'\')"><div class="ibox-title ibox-title-cr '+boxpres+'"><h5>'+campo.presentacion+'</h5><div class="amount-big"> <span class="the-number"> '+moneda+' '+campo.precio+'</span></div></div></a>')
-                    )
+                $.each(resp.data, function(i, campo){
+                    var boxpres = campo.estado == 'a' ? '' : 'boxpres';
+                    var html = '<div class="ibox ibox-cr">'
+                             + '<a onclick="editarPresentacion('+campo.id_pres+',\''+nomb+'\')">'
+                             + '<div class="ibox-title ibox-title-cr '+boxpres+'">'
+                             + '<h5>'+campo.presentacion+'</h5>'
+                             + '<div class="amount-big"><span class="the-number">'+moneda+' '+campo.precio+'</span></div>'
+                             + '</div></a></div>';
+                    $('#body-p').append(html);
                 });
             } else {
-                $('#body-p').html('<div class="panel panel-transparent panel-dashed text-center" style="padding-top: 6rem;padding-bottom: 6rem;">'
-                +'<div class="row"><div class="col-sm-8 col-sm-push-2"><h2 class="ich m-t-none">Agrega una presentación</h2><p>Debes agregar una presentación para poder guardar y usar el producto.</p></div></div></div>');
+                $('#body-p').html('<div class="panel panel-transparent panel-dashed text-center" style="padding-top:6rem;padding-bottom:6rem;">'
+                    + '<div class="row"><div class="col-sm-8 col-sm-push-2">'
+                    + '<h2 class="ich m-t-none">Agrega una presentación</h2>'
+                    + '<p>Debes agregar una presentación para poder guardar y usar el producto.</p>'
+                    + '</div></div></div>');
             }
+        },
+        error: function(){
+            toastr.error('No se pudo cargar la lista de presentaciones.');
         }
     });
-}
+};
 
 /* Editar datos de un producto */
 var editarProducto = function(cod){
@@ -180,120 +182,153 @@ var eliminarCategoria = function(id_catg){
 }
 
 /* Nueva presentacion de un producto */
-var nuevaPresentacion = function(cod_prod,nomb_prod){
+var nuevaPresentacion = function(cod_prod, nomb_prod){
+    // Reset del formulario
     $('#frm-presentacion').formValidation('resetForm', true);
-    $('#estado_pres').val('').selectpicker('refresh');
+    $('#estado_pres').val('a').selectpicker('refresh'); // por defecto activo
     $('#wizardPicturePreview').attr('src','assets/img/productos/default.png');
     $('#imagen').val('default.png');
     $('#wizard-picture').val('');
     $('#cod_producto').val(cod_prod);
     $('#nomb_prod').val(nomb_prod);
-    var cat = '%';
+    $('#cod_pres').val(''); // sin id para nueva presentación
+    $('#stock_min').val('');
+    $('#tiempostandar').val('');
+
+    // Mostrar modal
+    $('#mdl-presentacion').modal('show');
+
+    // Consultar tipo de producto para mostrar u ocultar checkboxes
     $.ajax({
         type: "POST",
         url: "?c=Config&a=ListaProd",
-        data: {
-            cod: cod_prod,
-            cat: cat
-        },
+        data: { cod: cod_prod },
         dataType: "json",
         success: function(item){
-            $.each(item.data, function(i, campo) {
-            //id_tipo = 1 (Producto Transformado)
-                if(campo.id_tipo == 1){
-                    // Ocultar check receta (tp-1), stock/stock_minimo (tp-2)
-                    $('#tp-1').css('display','none');
-                    $('#tp-2').css('display','none');
-                    // Quita el check a receta
+            if(item.data.length > 0){
+                var campo = item.data[0];
+
+                if(campo.id_tipo == 1){ // Producto Transformado
+                    $('#tp-1').hide();
+                    $('#tp-2').hide();
                     $('#id_rec').iCheck('uncheck');
-                    $('#mensaje-ins').css('display','block');
-                    $('#mensaje-ins').html('<div class="alert alert-warning">'
-                        +'<i class="fa fa-warning"></i> Guarde los datos de la presentaci&oacute;n, para que pueda ingresar una receta.'
+                    $('#mensaje-ins').show().html('<div class="alert alert-warning">'
+                        +'<i class="fa fa-warning"></i> Guarde los datos de la presentación para poder ingresar una receta.'
                         +'</div>');
-                }
-                //id_tipo = 2 (Producto NO Transformado)
-                else{
-                    //Quita el check a stock y su clase icheckbox_flat-green
+                } else { // Producto NO Transformado
+                    $('#tp-1').hide();
+                    $('#tp-2').show();
                     $('#id_stock').iCheck('uncheck');
-                    $('.icheckbox_flat-green').removeClass('checked');
-                    $('#mensaje-ins').css('display','none');
-                    // Ocultar check receta (tp-1)
-                    $('#tp-1').css('display','none');
-                    // Mostrar check stock / stock-minimo (tp-2)
-                    $('#tp-2').css('display','block');
+                    $('#mensaje-ins').hide();
                 }
-            });
+            }
+        },
+        error: function(xhr, status, error){
+            console.error('Error al consultar tipo de producto:', error);
         }
     });
-    $('#cod_pres').val('');
-    $('#stock_min').val('');
-    $('#mdl-presentacion').modal('show');
 }
 
+
 /* Editar datos de una presentacion de un producto */
-var editarPresentacion = function(cod_pres,nomb_prod){
-    var cat = '%';
+var editarPresentacion = function(cod_pres, nomb_prod) {
     $('#frm-presentacion').formValidation('resetForm', true);
     $("#nomb_prod").val(nomb_prod);
-    $('#cod_pre').val(cod_pres);
+    $('#cod_pres').val(cod_pres);
     $('#mdl-presentacion').modal('show');
+
     $.ajax({
         type: "POST",
         url: "?c=Config&a=ListaPres",
-        data: {
-            cod_prod: cat,
-            cod_pres: cod_pres
-        },
+        data: { cod_prod: '', cod_pres: cod_pres }, // solo pasamos cod_pres
         dataType: "json",
         success: function(item){
-            $.each(item.data, function(i, campo) {
+            if(item.data.length > 0){
+                var campo = item.data[0];
                 $('#cod_pres').val(campo.id_pres);
-                $('#cod_producto').val(campo.id_prod);
+                $('#cod_producto').val(campo.id_prod); // <--- Guardamos el id_prod real
                 $('#cod_produ').val(campo.cod_prod);
                 $('#nombre_pres').val(campo.presentacion);
                 $('#precio_prod').val(campo.precio);
-                $('#stock_min').val(campo.stock_min);
-                $('#wizardPicturePreview').attr('src','assets/img/productos/'+campo.imagen+'');
-                $('#imagen').val(campo.imagen);
+                $('#stock_min').val(campo.stock_min || '');
+                $('#tiempostandar').val(campo.tiempostandar || '');
+                $('#wizardPicturePreview').attr('src','assets/img/productos/'+(campo.imagen || 'default.png'));
+                $('#imagen').val(campo.imagen || '');
                 $('#wizard-picture').val('');
                 $('#estado_pres').selectpicker('val', campo.estado);
-                //id_tipo = 1 (Producto Transformado)
+
+                // lógica de checkboxes
                 if(campo.TipoProd.id_tipo == 1){
                     if(campo.receta == 1){
                         $('#id_rec').iCheck('check');
-                        $('#mensaje-ins').css('display','block');
-                        $('#mensaje-ins').html('<div class="alert alert-info">'
-                            +'<i class="fa fa-info"></i> Modificar los ingredientes <a class="alert-link" onclick="receta()">AQUI</a>.'
-                            +'</div>');
+                        $('#mensaje-ins').show().html('<div class="alert alert-info"><i class="fa fa-info"></i> Modificar los ingredientes <a class="alert-link" onclick="receta()">AQUI</a>.</div>');
                     } else {
                         $('#id_rec').iCheck('uncheck');
-                        $('#mensaje-ins').css('display','none');
-                        $('#mensaje-ins').html('<div class="alert alert-warning">'
-                            +'<i class="fa fa-warning"></i> Ingresar los ingredientes <a class="alert-link" onclick="receta()">AQUI</a> y luego click en Guardar.'
-                            +'</div>');
+                        $('#mensaje-ins').show().html('<div class="alert alert-warning"><i class="fa fa-warning"></i> Ingresar los ingredientes <a class="alert-link" onclick="receta()">AQUI</a> y luego click en Guardar.</div>');
                     }
-                    // Mostrar check receta (tp-1)
-                    $('#tp-1').css('display','block');
-                    // Ocultar check stock / stock_minimo (tp-2)
-                    $('#tp-2').css('display','none');
+                    $('#tp-1').show();
+                    $('#tp-2').hide();
+                } else {
+                    $('#mensaje-ins').hide();
+                    if(campo.receta == 1) $('#id_stock').iCheck('check'); else $('#id_stock').iCheck('uncheck');
+                    $('#tp-1').hide();
+                    $('#tp-2').show();
                 }
-                //id_tipo = 2 (Producto NO Transformado)
-                else{
-                    $('#mensaje-ins').css('display','none');
-                    if(campo.receta == 1){
-                        $('#id_stock').iCheck('check');
-                    } else {
-                        $('#id_stock').iCheck('uncheck');
-                    }
-                    // Ocultar check receta (tp-1)
-                    $('#tp-1').css('display','none');
-                    // Mostrar check stock / stock_minimo (tp-2)
-                    $('#tp-2').css('display','block');
-                }
-            });
+            }
+        },
+        error: function(xhr, status, error){
+            console.error('Error al cargar presentación:', error);
         }
     });
 }
+
+
+
+
+
+$(document).ready(function(){
+    $('#frm-presentacion').on('submit', guardarPresentacion);
+});
+
+function guardarPresentacion(e){
+    e.preventDefault();
+    e.stopImmediatePropagation(); // 🔒 evita duplicados
+
+    var formData = new FormData(this);
+
+    $.ajax({
+        url: '?c=Config&a=CrudPres',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        dataType: 'json',
+        beforeSend: function(){
+            $('#btn_guardar').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Guardando...');
+        },
+        success: function(resp){
+            if(resp && resp.success){
+                toastr.success(resp.message);
+                $('#mdl-presentacion').modal('hide');
+
+                // Recargar solo el producto que editamos
+                setTimeout(function(){
+                    listarPresentaciones($('#cod_producto').val(), $('#nomb_prod').val());
+                }, 300);
+            } else {
+                toastr.error(resp.message || 'Error al procesar los datos.');
+            }
+        },
+        error: function(xhr, status, error){
+            console.error('Error AJAX:', status, error);
+            toastr.error('Error de conexión con el servidor.');
+        },
+        complete: function(){
+            $('#btn_guardar').prop('disabled', false).html('<i class="fa fa-save"></i> Guardar');
+        }
+    });
+}
+
 
 /* Producto */
 $(function() {

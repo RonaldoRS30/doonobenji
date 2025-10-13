@@ -58,10 +58,34 @@ var pedidosMesa = function(){
 					accion = 'despMe';
 	    		}
     		}
+// Convertir tiempo estándar (decimal) a segundos para el temporizador
+// Ejemplo: item.tiempostandar = 1.5 significa 1 minuto y 30 segundos
+var minutos = Math.floor(item.tiempostandar);                     // parte entera -> minutos
+var segundos = Math.round((item.tiempostandar - minutos) * 60);   // parte decimal -> segundos
+
+// Multiplicar por la cantidad
+var tiempoTotal = (minutos * 60 + segundos) * item.cantidad;      // total en segundos
+
+// Obtener la fecha de pedido como objeto Date
+var fechaPedido = new Date(item.fecha_pedido);
+
+// Obtener diferencia en segundos entre ahora y la fecha de pedido
+var ahora = new Date();
+var segundosTranscurridos = Math.floor((ahora - fechaPedido) / 1000);
+
+// Calcular tiempo restante
+var tiempoRestante = tiempoTotal - segundosTranscurridos;
+if(tiempoRestante < 0) tiempoRestante = 0; // si ya pasó, mostrar 0
+
 
     		$('#list_pedidos_mesa')
 				.append(
 					$('<li class="success-element limost"/>')
+				 .attr('data-timer', tiempoRestante)  // <- aquí guardamos los segundos
+ .attr('data-id-pedido', item.id_pedido)
+    .attr('data-id-pres', item.id_pres)
+	    .attr('data-id-detalle_pedido', item.id_detalle_pedido)
+
 					.append(
 						$('<div class="row"/>')
 							.append(
@@ -71,13 +95,17 @@ var pedidosMesa = function(){
 										.html(item.nro_mesa+'<br>'+item.desc_m)
 								)
 							)
-							.append(
-								$('<div class="col-md-4"/>')
+						.append(
+								$('<div class="col-md-2"/>')
 									.append(
-										$('<span/>')
-										.html(item.cantidad+' '+item.nombre_prod+' <span class="label label-info">'+item.pres_prod+
-										'</span>&nbsp;<span class="label label-warning">'+item.CProducto.desc_c+
-										'</span><br><i class="fa fa-comment"></i> <small class="text-navy"><em>'+item.comentario+'</em>')
+									$('<span/>')
+										.html(
+											item.cantidad + ' ' +
+											'<span class="nombre-prod">' + item.nombre_prod + '</span> ' +
+											'<span class="label label-info">' + item.pres_prod + '</span> ' +
+											'<span class="label label-warning">' + item.CProducto.desc_c + '</span><br>' +
+											'<i class="fa fa-comment"></i> <small class="text-navy"><em>' + item.comentario + '</em></small>'
+										)
 								)
 							)
 							.append(
@@ -87,6 +115,12 @@ var pedidosMesa = function(){
 										.html(horaPedido)
 								)
 							)
+						    .append(
+                                    $('<div class="col-md-2" style="text-align: center;"/>')
+                                      .append(
+                $('<span class="temporizador"/>').html(formatTime(tiempoRestante))
+            )
+                                )
 							.append(
 								$('<div class="col-md-2" style="text-align: center;"/>')
 									.append(
@@ -121,10 +155,96 @@ var pedidosMesa = function(){
 							)
 						)
 					);				
-    		})
+    		});
+			  // Iniciar temporizador en tiempo real
+            iniciarTemporizadores();
         }
     });
 }
+var temporizadorInterval = null;
+
+function iniciarTemporizadores(){
+    if(temporizadorInterval) return; // Si ya existe, no crear otro
+
+    temporizadorInterval = setInterval(function(){
+        try {
+            $('#list_pedidos_mesa li').each(function(){
+                var timer = parseInt($(this).attr('data-timer'));
+
+                if(isNaN(timer)){
+                    throw new Error('El temporizador no es un número válido para el pedido.');
+                }
+
+                if(timer > 0){
+                    timer--;
+                    $(this).attr('data-timer', timer);
+                    $(this).find('.temporizador').text(formatTime(timer));
+                } else {
+                    $(this).find('.temporizador').text('00:00');
+
+                    // Verificar si ya se mostró la alerta
+                    if($(this).attr('data-alerta') !== "1"){
+                        // Cambiar color de la fila a rojo
+                        $(this).css('background-color', '#f2dede'); // rojo claro estilo bootstrap danger
+
+                        // Lanzar alerta
+						var nombre_prod = $(this).find('.nombre-prod').text();
+
+                        var mesa = $(this).find('strong').text().split('\n')[0];
+						//var nombre_prod = $(this).find('span').first().text();
+					toastr.warning('¡El pedido ' + nombre_prod + ' de la mesa ' + mesa + ' está retrasado!');
+                        // Marcar como alerta mostrada
+                        $(this).attr('data-alerta', "1");
+
+                        // --- INSERTAR EN tm_pedido_retraso ---
+                        var id_pedido = $(this).data('id-pedido');   // agregar data-id-pedido al generar li
+                        var id_pres = $(this).data('id-pres');       // agregar data-id-pres
+						var id_detalle_pedido = $(this).data('id-detalle_pedido'); // agregar data-id-detalle_pedido
+                        $.ajax({
+                            type: "POST",
+                            url: "?c=AreaProd&a=InsertarPedidoRetraso",
+                            data: {
+                                id_pedido: id_pedido,
+                                id_pres: id_pres,
+								id_detalle_pedido: id_detalle_pedido,
+								estado: 1  // <- indicador de la función
+
+                            },
+                            success: function(res){
+                                console.log("Pedido retrasado insertado correctamente:", res);
+                            },
+                            error: function(err){
+                                console.error("Error al insertar pedido retrasado:", err);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch(err) {
+            console.error('Error en el temporizador:', err);
+            toastr.error('Error en el temporizador: ' + err.message);
+        }
+    }, 1000);
+}
+
+
+
+function formatTime(segundos){
+    var m = Math.floor(segundos / 60);
+    var s = segundos % 60;
+    // Agregar ceros a la izquierda si es menor que 10
+    return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+}
+
+function recargarPedidos() {
+    pedidosMesa(); // Llama a tu función de carga de pedidos
+pedidosMostrador();
+}
+
+// Recargar cada 5 segundos (5000 ms)
+//setInterval(recargarPedidos, 5000);
+
+
 
 /* Mostrar todos los pedidos realizados en el mostrador o para llevar */
 var contMo = 0;
@@ -177,9 +297,35 @@ var pedidosMostrador = function(){
 	    			maccion = 'despMo';
 	    		}
     		}
+
+// Convertir tiempo estándar (decimal) a segundos para el temporizador
+// Ejemplo: item.tiempostandar = 1.5 significa 1 minuto y 30 segundos
+var minutos = Math.floor(item.tiempostandar);                     // parte entera -> minutos
+var segundos = Math.round((item.tiempostandar - minutos) * 60);   // parte decimal -> segundos
+
+// Multiplicar por la cantidad
+var tiempoTotal = (minutos * 60 + segundos) * item.cantidad;      // total en segundos
+
+// Obtener la fecha de pedido como objeto Date
+var fechaPedido = new Date(item.fecha_pedido);
+
+// Obtener diferencia en segundos entre ahora y la fecha de pedido
+var ahora = new Date();
+var segundosTranscurridos = Math.floor((ahora - fechaPedido) / 1000);
+
+// Calcular tiempo restante
+var tiempoRestante = tiempoTotal - segundosTranscurridos;
+if(tiempoRestante < 0) tiempoRestante = 0; // si ya pasó, mostrar 0
+
+
     		$('#list_pedidos_most')
 				.append(
 					$('<li class="success-element limost"/>')
+					 .attr('data-timer', tiempoRestante)  // <- aquí guardamos los segundos
+ .attr('data-id-pedido', item.id_pedido)
+    .attr('data-id-pres', item.id_pres)
+	    .attr('data-id-detalle_pedido', item.id_detalle_pedido)				
+					
 					.append(
 						$('<div class="row"/>')
 							.append(
@@ -190,12 +336,16 @@ var pedidosMostrador = function(){
 								)
 							)
 							.append(
-								$('<div class="col-md-4"/>')
+								$('<div class="col-md-2"/>')
 									.append(
-										$('<span/>')
-										.html(item.cantidad+' '+item.nombre_prod+' <span class="label label-info">'+item.pres_prod+
-										'</span>&nbsp;<span class="label label-warning">'+item.CProducto.desc_c+
-										'</span><br><i class="fa fa-comment"></i> <small class="text-navy"><em>'+item.comentario+'</em>')
+									$('<span/>')
+										.html(
+											item.cantidad + ' ' +
+											'<span class="nombre-prod">' + item.nombre_prod + '</span> ' +
+											'<span class="label label-info">' + item.pres_prod + '</span> ' +
+											'<span class="label label-warning">' + item.CProducto.desc_c + '</span><br>' +
+											'<i class="fa fa-comment"></i> <small class="text-navy"><em>' + item.comentario + '</em></small>'
+										)
 								)
 							)
 							.append(
@@ -205,6 +355,12 @@ var pedidosMostrador = function(){
 										.html(horaPedido)
 								)
 							)
+							.append(
+                                    $('<div class="col-md-2" style="text-align: center;"/>')
+                                      .append(
+                $('<span class="temporizador"/>').html(formatTimeMO(tiempoRestante))
+            )
+                                )
 							.append(
 								$('<div class="col-md-2" style="text-align: center;"/>')
 									.append(
@@ -239,11 +395,86 @@ var pedidosMostrador = function(){
 							)
 						)
 					);			
-    		})
+    		});
+			  // Iniciar temporizador en tiempo real
+            iniciarTemporizadoresMO();
         }
     });
 }
 
+var temporizadorIntervalMO = null;
+
+function iniciarTemporizadoresMO(){
+    if(temporizadorIntervalMO) return; // Si ya existe, no crear otro
+
+    temporizadorIntervalMO = setInterval(function(){
+        try {
+            $('#list_pedidos_most li').each(function(){
+                var timer = parseInt($(this).attr('data-timer'));
+
+                if(isNaN(timer)){
+                    throw new Error('El temporizador no es un número válido para el pedido.');
+                }
+
+                if(timer > 0){
+                    timer--;
+                    $(this).attr('data-timer', timer);
+                    $(this).find('.temporizador').text(formatTimeMO(timer));
+                } else {
+                    $(this).find('.temporizador').text('00:00');
+
+                    // Verificar si ya se mostró la alerta
+                    if($(this).attr('data-alerta') !== "1"){
+                        // Cambiar color de la fila a rojo
+                        $(this).css('background-color', '#f2dede'); // rojo claro estilo bootstrap danger
+
+                        // Lanzar alerta
+						var nombre_prod = $(this).find('.nombre-prod').text();
+
+                        var mesa = $(this).find('strong').text().split('\n')[0];
+						//var nombre_prod = $(this).find('span').first().text();
+					toastr.warning('¡' + nombre_prod + ' del pedido ' + mesa + ' está retrasado!');
+
+                        // Marcar como alerta mostrada
+                        $(this).attr('data-alerta', "1");
+
+                        // --- INSERTAR EN tm_pedido_retraso ---
+                        var id_pedido = $(this).data('id-pedido');   // agregar data-id-pedido al generar li
+                        var id_pres = $(this).data('id-pres');       // agregar data-id-pres
+						var id_detalle_pedido = $(this).data('id-detalle_pedido'); // agregar data-id-detalle_pedido
+                        $.ajax({
+                            type: "POST",
+                            url: "?c=AreaProd&a=InsertarPedidoRetraso",
+                            data: {
+                                id_pedido: id_pedido,
+                                id_pres: id_pres,
+								id_detalle_pedido: id_detalle_pedido,
+								estado: 2  // <- indicador de la función
+
+                            },
+                            success: function(res){
+                                console.log("Pedido retrasado insertado correctamente:", res);
+                            },
+                            error: function(err){
+                                console.error("Error al insertar pedido retrasado:", err);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch(err) {
+            console.error('Error en el temporizador:', err);
+            toastr.error('Error en el temporizador: ' + err.message);
+        }
+    }, 1000);
+}
+
+
+function formatTimeMO(segundos){
+    var min = Math.floor(segundos / 60);
+    var sec = segundos % 60;
+    return (min < 10 ? '0'+min : min) + ':' + (sec < 10 ? '0'+sec : sec);
+}
 /* Mostrar todos los pedidos realizados en el mostrador o para llevar */
 var contDe = 0;
 var nropedidosDelivery = function(){
@@ -296,9 +527,36 @@ var pedidosDelivery = function(){
 	    			maccion = 'despDe';
 	    		}
     		}
+
+
+// Convertir tiempo estándar (decimal) a segundos para el temporizador
+// Ejemplo: item.tiempostandar = 1.5 significa 1 minuto y 30 segundos
+var minutos = Math.floor(item.tiempostandar);                     // parte entera -> minutos
+var segundos = Math.round((item.tiempostandar - minutos) * 60);   // parte decimal -> segundos
+
+// Multiplicar por la cantidad
+var tiempoTotal = (minutos * 60 + segundos) * item.cantidad;      // total en segundos
+
+// Obtener la fecha de pedido como objeto Date
+var fechaPedido = new Date(item.fecha_pedido);
+
+// Obtener diferencia en segundos entre ahora y la fecha de pedido
+var ahora = new Date();
+var segundosTranscurridos = Math.floor((ahora - fechaPedido) / 1000);
+
+// Calcular tiempo restante
+var tiempoRestante = tiempoTotal - segundosTranscurridos;
+if(tiempoRestante < 0) tiempoRestante = 0; // si ya pasó, mostrar 0
+
+
     		$('#list_pedidos_del')
 				.append(
 					$('<li class="success-element limost"/>')
+			 .attr('data-timer', tiempoRestante)  // <- aquí guardamos los segundos
+ .attr('data-id-pedido', item.id_pedido)
+    .attr('data-id-pres', item.id_pres)
+	    .attr('data-id-detalle_pedido', item.id_detalle_pedido)			
+					
 					.append(
 						$('<div class="row"/>')
 							.append(
@@ -308,13 +566,17 @@ var pedidosDelivery = function(){
 										.html('<i class="fa fa-slack"></i> '+item.nro_pedido)
 								)
 							)
-							.append(
-								$('<div class="col-md-4"/>')
+						.append(
+								$('<div class="col-md-2"/>')
 									.append(
-										$('<span/>')
-										.html(item.cantidad+' '+item.nombre_prod+' <span class="label label-info">'+item.pres_prod+
-										'</span>&nbsp;<span class="label label-warning">'+item.CProducto.desc_c+
-										'</span><br><i class="fa fa-comment"></i> <small class="text-navy"><em>'+item.comentario+'</em>')
+									$('<span/>')
+										.html(
+											item.cantidad + ' ' +
+											'<span class="nombre-prod">' + item.nombre_prod + '</span> ' +
+											'<span class="label label-info">' + item.pres_prod + '</span> ' +
+											'<span class="label label-warning">' + item.CProducto.desc_c + '</span><br>' +
+											'<i class="fa fa-comment"></i> <small class="text-navy"><em>' + item.comentario + '</em></small>'
+										)
 								)
 							)
 							.append(
@@ -324,6 +586,13 @@ var pedidosDelivery = function(){
 										.html(horaPedido)
 								)
 							)
+
+							.append(
+                                    $('<div class="col-md-2" style="text-align: center;"/>')
+                                      .append(
+                $('<span class="temporizador"/>').html(formatTimeDE(tiempoRestante))
+            )
+                                )	
 							.append(
 								$('<div class="col-md-2" style="text-align: center;"/>')
 									.append(
@@ -358,9 +627,85 @@ var pedidosDelivery = function(){
 							)
 						)
 					);			
-    		})
+    		});
+			  // Iniciar temporizador en tiempo real
+            iniciarTemporizadoresDE();
         }
     });
+}
+
+
+var temporizadorIntervalDE = null;
+
+function iniciarTemporizadoresDE(){
+    if(temporizadorIntervalDE) return; // Si ya existe, no crear otro
+
+    temporizadorIntervalDE = setInterval(function(){
+        try {
+            $('#list_pedidos_del li').each(function(){
+                var timer = parseInt($(this).attr('data-timer'));
+
+                if(isNaN(timer)){
+                    throw new Error('El temporizador no es un número válido para el pedido.');
+                }
+
+                if(timer > 0){
+                    timer--;
+                    $(this).attr('data-timer', timer);
+                    $(this).find('.temporizador').text(formatTimeMO(timer));
+                } else {
+                    $(this).find('.temporizador').text('00:00');
+
+                    // Verificar si ya se mostró la alerta
+                    if($(this).attr('data-alerta') !== "1"){
+                        // Cambiar color de la fila a rojo
+                        $(this).css('background-color', '#f2dede'); // rojo claro estilo bootstrap danger
+
+                        // Lanzar alerta
+						var nombre_prod = $(this).find('.nombre-prod').text();
+
+                        var mesa = $(this).find('strong').text().split('\n')[0];
+						//var nombre_prod = $(this).find('span').first().text();
+					toastr.warning('¡' + nombre_prod + ' del pedido ' + mesa + ' está retrasado!');
+
+                        // Marcar como alerta mostrada
+                        $(this).attr('data-alerta', "1");
+
+                        // --- INSERTAR EN tm_pedido_retraso ---
+                        var id_pedido = $(this).data('id-pedido');   // agregar data-id-pedido al generar li
+                        var id_pres = $(this).data('id-pres');       // agregar data-id-pres
+						var id_detalle_pedido = $(this).data('id-detalle_pedido'); // agregar data-id-detalle_pedido
+                        $.ajax({
+                            type: "POST",
+                            url: "?c=AreaProd&a=InsertarPedidoRetraso",
+                            data: {
+                                id_pedido: id_pedido,
+                                id_pres: id_pres,
+								id_detalle_pedido: id_detalle_pedido,
+								estado: 3  // <- indicador de la función
+
+                            },
+                            success: function(res){
+                                console.log("Pedido retrasado insertado correctamente:", res);
+                            },
+                            error: function(err){
+                                console.error("Error al insertar pedido retrasado:", err);
+                            }
+                        });
+                    }
+                }
+            });
+        } catch(err) {
+            console.error('Error en el temporizador:', err);
+            toastr.error('Error en el temporizador: ' + err.message);
+        }
+    }, 1000);
+}
+
+function formatTimeDE(segundos){
+    var min = Math.floor(segundos / 60);
+    var sec = segundos % 60;
+    return (min < 10 ? '0'+min : min) + ':' + (sec < 10 ? '0'+sec : sec);
 }
 
 $('#tab1').on('click', function() { 
