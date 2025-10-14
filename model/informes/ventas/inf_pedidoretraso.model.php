@@ -1,5 +1,5 @@
 <?php
-include_once("model/rest.model.php");
+include_once(__DIR__ . "/../../rest.model.php");
 
 class InformeModel
 {
