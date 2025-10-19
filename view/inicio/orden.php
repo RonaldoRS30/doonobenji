@@ -87,7 +87,7 @@
                     </div>
                 <?php } ?>
                     <div class="text-right opc2" style="display: none;">
-                        &nbsp;<button type="button" class="btn btn-danger" onclick="desocuparMesa(<?php echo $_GET['Cod']; ?>);"><i class="fa fa-sign-out"></i>&nbsp;Desocupar</button>
+                        &nbsp;<button type="button" class="btn btn-danger" onclick="desocuparMesa(<?php echo $_GET['Cod']; ?>);"><i class="fa fa-sign-out"></i>&nbsp;Cancelar</button>
                     </div>
                 </div>
             </div>
@@ -428,16 +428,14 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary">
-            <i class="fa fa-check-square-o"></i> Aceptar
-          </button>
+<button   button type="button" class="btn btn-danger" data-toggle="modal" data-target="#mdl-cancelar-orden" id="btn-cancelar-pedido">
+                <i class="fa fa-ban"></i> Cancelar Pedido
+            </button>
         </div>
       </form>
 
         <!-- Botón para cancelar pedido -->
-        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#mdl-cancelar-orden" id="btn-cancelar-pedido">
-                <i class="fa fa-ban"></i> Cancelar Pedido
-            </button>
+        
 
     </div>
   </div>
