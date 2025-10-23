@@ -253,4 +253,75 @@ public function ObtenerClientesPorDetalles($detalle_ids) {
         }
     }
 
+public function ProductosFrecuentesRetraso($minVeces)
+{
+    try {
+        // Solo cuenta los productos con retrasos del día actual
+        $sql = "
+            SELECT 
+                pr.id_pres,
+                COUNT(*) AS total_retrasos,
+                tp.nombre AS nombre_producto
+            FROM tm_pedido_retraso pr
+            INNER JOIN tm_producto_pres tpp 
+                ON pr.id_pres = tpp.id_pres
+            INNER JOIN tm_producto tp 
+                ON tpp.id_prod = tp.id_prod
+            WHERE DATE(pr.fecha_pedido) = CURDATE()  -- 🔍 Solo pedidos del día actual
+            GROUP BY pr.id_pres
+            HAVING COUNT(*) >= ?
+            ORDER BY total_retrasos DESC
+        ";
+
+        $stm = $this->conexionn->prepare($sql);
+        $stm->execute([$minVeces]);
+        return $stm->fetchAll(PDO::FETCH_OBJ);
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
+public function ActualizarTiempoEstandar($idsPres, $incremento = 2)
+{
+    try {
+        if (empty($idsPres)) {
+            return false;
+        }
+
+        // Crear placeholders (?, ?, ?, ...)
+        $placeholders = implode(',', array_fill(0, count($idsPres), '?'));
+
+        $sql = "
+            UPDATE tm_producto_pres
+            SET tiempostandar = tiempostandar + ?
+            WHERE id_pres IN ($placeholders)
+        ";
+
+        // Mezclar el incremento como primer parámetro
+        $params = array_merge([$incremento], $idsPres);
+
+        // 🔍 Log de depuración
+        $logPath = __DIR__ . '/../../../reportes/log_rpapedido.txt';
+        $log = "[" . date('Y-m-d H:i:s') . "] SQL: $sql | Params: " . json_encode($params) . "\n";
+        file_put_contents($logPath, $log, FILE_APPEND);
+
+        $stm = $this->conexionn->prepare($sql);
+        $resultado = $stm->execute($params);
+
+        // 🔍 Log después de ejecutar
+        $log = "[" . date('Y-m-d H:i:s') . "] Filas afectadas: " . $stm->rowCount() . "\n";
+        file_put_contents($logPath, $log, FILE_APPEND);
+
+        return $resultado;
+    } catch (Exception $e) {
+        $errorLog = "[" . date('Y-m-d H:i:s') . "] ❌ Error en ActualizarTiempoEstandar: " . $e->getMessage() . "\n";
+        file_put_contents(__DIR__ . '/../../../reportes/log_rpapedido.txt', $errorLog, FILE_APPEND);
+        return false;
+    }
+}
+
+
+
+
+
 }
