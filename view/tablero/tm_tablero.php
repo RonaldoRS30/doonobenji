@@ -8,15 +8,14 @@
 <input type="hidden" id="dia_a" value="<?php echo $fecha; ?>"/>
 
 <div class="wrapper wrapper-content animated fadeIn">
+
+    <!-- FILTRO DE FECHAS -->
     <div class="row">
         <div class="col-lg-12">
             <div class="ibox" style="overflow: inherit;">
                 <div class="ibox-title">
                     <div class="row">
-                        <div class="col-sm-1">
-                            <i class="fa fa-info-circle"></i> Datos obtenidos:
-                        </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-9">
                             <div class="form-group">
                                 <div class="input-group">
                                     <input type="text" class="form-control bg-r" name="start" id="start" value="<?php echo $fechaa,' AM'; ?>"/>
@@ -25,55 +24,64 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="ibox-content">
-                    <div class="p-w-md m-t-sm">
-                        <div class="row">
-                            <div class="col-sm-8"> 
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        <span class="stats-label text-navy">Ventas en efectivo</span>
-                                        <h4 class="efe"></h4>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <span class="stats-label text-success">Ventas con tarjeta</span>
-                                        <h4 class="tar"></h4>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <span class="stats-label text-info">Total de Ventas</span>
-                                        <h4 class="total_v"></h4>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <span class="stats-label text-navy">Total de ingresos de caja</span>
-                                        <h4><span id="ing"></span></h4>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <span class="stats-label text-danger">Total de egresos de caja</span>
-                                        <h4><span id="gas"></span></h4>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <span class="stats-label text-warning">Total de descuentos</span>
-                                        <h4><span class="des"></span></h4>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">
-                                <div class="row m-t-xs">
-                                    <div class="col-sm-6 col-sm-offset-6">
-                                        <h3 class="m-b-xs text-navy">Efectivo real</h3>
-                                        <h1 class="no-margins" id="efe_real"></h1>
-                                        <div class="font-bold text-navy">100% <i class="fa fa-money"></i></div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="col-sm-1">
+                            <i class="fa fa-info-circle"></i> Datos obtenidos:
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row"
+
+    <!-- RESUMEN DE VENTAS Y CAJA -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <span class="stats-label text-navy">Ventas en efectivo</span>
+                            <h4 class="efe"></h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="stats-label text-success">Ventas con tarjeta</span>
+                            <h4 class="tar"></h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="stats-label text-info">Total de Ventas</span>
+                            <h4 class="total_v"></h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="stats-label text-navy">Total de ingresos de caja</span>
+                            <h4><span id="ing"></span></h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="stats-label text-danger">Total de egresos de caja</span>
+                            <h4><span id="gas"></span></h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="stats-label text-warning">Total de descuentos</span>
+                            <h4><span class="des"></span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EFECTIVO REAL -->
+        <div class="col-lg-4">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content text-center">
+                    <h3 class="m-b-xs text-navy">Efectivo real</h3>
+                    <h1 class="no-margins" id="efe_real"></h1>
+                    <div class="font-bold text-navy">100% <i class="fa fa-money"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VENTAS POR TIPO Y PROMEDIO -->
+    <div class="row">
         <div class="col-lg-3">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -87,6 +95,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-lg-3">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -94,19 +103,20 @@
                     <h5>Por tipo de pago</h5>
                 </div>
                 <div class="ibox-content">
-                <div class="row rco">
-                    <div class="col-lg-6">
-                        <div class="font-bold text-default">Efectivo <span class="text-navy efe_p"></span></div>
-                        <small><span class="efe"></span> - <span class="text-navy">100%</span></small>
+                    <div class="row rco">
+                        <div class="col-lg-6">
+                            <div class="font-bold text-default">Efectivo <span class="text-navy efe_p"></span></div>
+                            <small><span class="efe"></span> - <span class="text-navy">100%</span></small>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="stat-percent font-bold text-default">Tarjeta <span class="text-navy tar_p"></span></div>
+                            <small class="stat-percent"><span class="tar"></span> - <span class="text-navy">100%</span></small>
+                        </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="stat-percent font-bold text-default">Tarjeta <span class="text-navy tar_p"></span></div>
-                        <small class="stat-percent"><span class="tar"></span> - <span class="text-navy">100%</span></small>
-                    </div>
-                </div>
                 </div>
             </div>
         </div>
+
         <div class="col-lg-3">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -120,6 +130,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-lg-3">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -134,6 +145,8 @@
             </div>
         </div>
     </div>
+
+    <!-- MOZO Y PEDIDOS -->
     <div class="row">
         <div class="col-lg-3">
             <div class="ibox float-e-margins">
@@ -148,7 +161,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-lg-3">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -157,19 +170,19 @@
                 </div>
                 <div class="ibox-content">
                     <div class="row">
-                            <div class="col-md-6">
-                                <h1 class="no-margins" id="pa_me"></h1>
-                                <div class="font-bold text-danger">Mesas <i class="fa fa-level-down"></i></div>
-                            </div>
-                            <div class="col-md-6" style="text-align: right;">
-                                <h1 class="no-margins" id="pa_mo"></h1>
-                                <div class="font-bold text-danger">Para llevar <i class="fa fa-level-down"></i></div>
-                            </div>
+                        <div class="col-md-6">
+                            <h1 class="no-margins" id="pa_me"></h1>
+                            <div class="font-bold text-danger">Mesas <i class="fa fa-level-down"></i></div>
                         </div>
-
+                        <div class="col-md-6 text-right">
+                            <h1 class="no-margins" id="pa_mo"></h1>
+                            <div class="font-bold text-danger">Para llevar <i class="fa fa-level-down"></i></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-lg-3">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -183,6 +196,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-lg-3">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -197,6 +211,8 @@
             </div>
         </div>
     </div>
+
+    <!-- PRODUCTOS MÁS VENDIDOS -->
     <div class="row">
         <div class="col-lg-6">
             <div class="ibox float-e-margins">
@@ -215,12 +231,12 @@
                             <th style="text-align: center;">% Ventas</th>
                         </tr>
                         </thead>
-                        <tbody id="lista_productos">           
-                        </tbody>
+                        <tbody id="lista_productos"></tbody>
                     </table>
                 </div>
             </div>
         </div>
+
         <div class="col-lg-6">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -238,84 +254,79 @@
                             <th style="text-align: center;">% Ventas</th>
                         </tr>
                         </thead>
-                        <tbody id="lista_platos">           
-                        </tbody>
+                        <tbody id="lista_platos"></tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="row">
+    </div>
+
+    <!-- BOTÓN MOTIVOS CANCELACIÓN -->
+    <div class="row">
         <div class="col-lg-2">
             <button type="button" class="btn btn-danger btn-block" id="btn-motivos-cancelacion">
                 <i class="fa fa-ban"></i> Pedidos Cancelados - Motivos
             </button>
         </div>
-</div>
-
-
-
     </div>
-</div>
 
-<div class="modal fade" id="mdl-motivos-cancelacion" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xxl" role="document"> <!-- Más ancho -->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title"><i class="fa fa-ban"></i> Motivos de Pedidos Cancelados</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
+    <!-- MODAL MOTIVOS CANCELACIÓN -->
+    <div class="modal fade" id="mdl-motivos-cancelacion" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xxl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="fa fa-ban"></i> Motivos de Pedidos Cancelados</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3 align-items-end">
+                        <div class="col-md-3">
+                            <label>Desde:</label>
+                            <input type="date" id="fecha_desde" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label>Hasta:</label>
+                            <input type="date" id="fecha_hasta" class="form-control">
+                        </div>
+                        <div class="col-md-6 text-right">
+                            <div class="btn-group w-100" role="group">
+                                <button class="btn btn-primary" id="btn-filtrar-fechas">
+                                    <i class="fa fa-search"></i> Filtrar
+                                </button>
+                                <button class="btn btn-secondary" id="btn-limpiar-filtros">
+                                    <i class="fa fa-eraser"></i> Limpiar filtros
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-      <div class="modal-body">
-        <!-- Filtros de fecha -->
-        <div class="row mb-3 align-items-end">
-          <div class="col-md-3">
-            <label>Desde:</label>
-            <input type="date" id="fecha_desde" class="form-control">
-          </div>
-          <div class="col-md-3">
-            <label>Hasta:</label>
-            <input type="date" id="fecha_hasta" class="form-control">
-          </div>
-          <div class="col-md-6 text-right">
-            <div class="btn-group w-100" role="group">
-              <button class="btn btn-primary" id="btn-filtrar-fechas">
-                <i class="fa fa-search"></i> Filtrar
-              </button>
-              <button class="btn btn-secondary" id="btn-limpiar-filtros">
-                <i class="fa fa-eraser"></i> Limpiar filtros
-              </button>
+                    <table id="tabla-motivos" class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th># Pedido</th>
+                            <th>Motivo</th>
+                            <th>Usuario</th>
+                            <th>Fecha</th>
+                        </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                    <div id="motivo-mas-frecuente" style="margin-top: 10px; font-weight: bold;"></div>
+                    <div style="text-align:center; margin-top:20px;">
+                        <canvas id="grafico-motivos" width="450" height="300" style="background-color:white; margin: 0 auto; display: block;"></canvas>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+                </div>
             </div>
-          </div>
         </div>
-
-        <!-- Tabla -->
-        <table id="tabla-motivos" class="table table-striped table-bordered">
-          <thead>
-            <tr>
-              <th># Pedido</th>
-              <th>Motivo</th>
-              <th>Usuario</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-
-        <!-- Motivo más frecuente -->
-        <div id="motivo-mas-frecuente" style="margin-top: 10px; font-weight: bold;"></div>
-
-        <!-- Gráfico -->
-        <div style="text-align:center; margin-top:20px;">
-          <canvas id="grafico-motivos" width="450" height="300" style="background-color:white; margin: 0 auto; display: block;"></canvas>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
-      </div>
     </div>
-  </div>
+
 </div>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Asegúrate de incluir Chart.js -->
@@ -455,4 +466,183 @@ $('#btn-limpiar-filtros').click(function() {
 
 <script src="assets/scripts/tablero/func-tablero.js"></script>
 
+<style>
+/* 🌿 Estilo Gastronómico Moderno */
+
+/* Fondo general */
+body {
+  background: linear-gradient(135deg, #f9f6f2 0%, #fff8f3 100%);
+  font-family: 'Poppins', sans-serif;
+  color: #3e3e3e;
+}
+
+/* Contenedores principales */
+.ibox {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  border: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.ibox:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
+}
+
+/* Encabezado elegante */
+.ibox-title {
+  background: #fffaf4;
+  border-bottom: 2px solid #e3a84f;
+  border-radius: 16px 16px 0 0;
+  padding: 15px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ibox-title h5 {
+  font-weight: 700;
+  color: #a35a1a;
+  font-size: 17px;
+  margin: 0;
+}
+
+.ibox-title i {
+  color: #c8792b;
+}
+
+/* Cuerpo del bloque */
+.ibox-content {
+  padding: 22px 28px;
+}
+
+/* Etiquetas de estadísticas */
+.stats-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #735c42;
+  margin-bottom: 6px;
+}
+
+/* Números grandes */
+h1.no-margins, h4, h3 {
+  font-weight: 700;
+  margin: 0;
+  color: #2f2f2f;
+}
+
+/* Colores personalizados */
+.text-navy { color: #4a5f6b !important; }
+.text-success { color: #2b9348 !important; }
+.text-warning { color: #e3a84f !important; }
+.text-danger { color: #d94a3d !important; }
+.text-info { color: #3b8fc2 !important; }
+
+/* Tablas */
+.table thead th {
+  background: #fff3e0;
+  color: #5c3e2b;
+  font-weight: 600;
+  border: none;
+  text-align: center;
+}
+
+.table tbody tr:hover {
+  background-color: #fff9f2;
+}
+
+.table td, .table th {
+  vertical-align: middle !important;
+  text-align: center;
+}
+
+/* Botón de motivos */
+#btn-motivos-cancelacion {
+  background: linear-gradient(135deg, #d75f2e, #b8451b);
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 30px;
+  padding: 14px 24px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#btn-motivos-cancelacion:hover {
+  background: linear-gradient(135deg, #b8451b, #933716);
+  transform: scale(1.04);
+}
+
+/* Modal */
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  background-color: #fff2e0;
+  border-bottom: 2px solid #e3a84f;
+}
+
+.modal-title {
+  font-weight: 700;
+  color: #5a3d1f;
+}
+
+/* Inputs de fecha */
+#mdl-motivos-cancelacion input[type="date"] {
+  border-radius: 10px;
+  border: 1px solid #c5b49b;
+  padding: 8px;
+  background: #fffdf9;
+}
+
+/* Botones del modal */
+#mdl-motivos-cancelacion .btn-primary {
+  background: #c46d25;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+}
+
+#mdl-motivos-cancelacion .btn-primary:hover {
+  background: #a8561b;
+}
+
+#mdl-motivos-cancelacion .btn-secondary {
+  background: #f0e0ce;
+  border: none;
+  color: #4b3b2a;
+  border-radius: 25px;
+  font-weight: 600;
+}
+
+#mdl-motivos-cancelacion .btn-secondary:hover {
+  background: #e4d3bd;
+}
+
+/* Gráfico */
+#grafico-motivos {
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  background-color: white;
+}
+
+/* Ajustes responsive */
+@media (max-width: 992px) {
+  .ibox-content {
+    padding: 18px;
+  }
+  .ibox-title h5 {
+    font-size: 15px;
+  }
+  .table {
+    font-size: 14px;
+  }
+}
+</style>
 

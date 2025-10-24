@@ -53,70 +53,127 @@ $fecha = date("Y-m-d");
                                 <li id="tab<?php echo $cont++; ?>"><a data-toggle="tab" href="#tab-<?php echo $p->id_catg; ?>" style="border-radius: 4px 4px 0 0;"><i class="fa fa-cube"></i><?php echo $p->descripcion; ?>&nbsp;&nbsp;</a></li>
                                 <?php endforeach; ?>
                             </ul>
-                            <div class="tab-content">
+                            <div class="tab-content tab-fondo">
+                                <div class="mesas-area">
                                 <?php $cont=1; $co=0; foreach($this->model->ListarCM() as $c): ?>
                                 <div id="tab-<?php echo $c->id_catg; ?>" class="tab-pane tp<?php echo $cont++; ?>">
                                     <div class="panel-body">
                                         <div class="row" style="text-align: center;">
                                             <div class="col-sm-12">
 
-                                                <?php if($_SESSION["rol_usr"] == 4) { ?>
+<?php if($_SESSION["rol_usr"] == 4) { ?>
 
-                                                    <?php foreach($this->model->ListarMesa() as $r): ?>
-                                                    
-                                                        <?php if ($r->id_catg == $c->id_catg AND $r->estado == 'a') { ?>
-                                        
-                                                            <a href="#" onclick="registrarMesa(<?php echo $r->id_mesa.',\''. $r->nro_mesa.'\',\''.$r->desc_m.'\''; ?>);">
-                                                                <button style="width: 122px" class="btn btn-primary dim btn-large-dim" type="button"><?php echo $r->nro_mesa ?></button>
-                                                            </a>
-                                                            
-                                                        <?php } elseif ($r->id_catg == $c->id_catg AND $r->estado == 'p') { ?>
-                                                            
-                                                            <a href="pedido_mesa.php?Cod=<?php echo $r->id_pedido ?>">
-                                                                <button style="width: 122px" class="btn btn-info dim btn-large-dim" type="button"> <?php echo $r->nro_mesa ?><span class="span-b"><i class="fa fa-clock-o"></i>&nbsp;<input type="hidden" name="hora_pe[]" value="<?php echo $r->fecha_p ?>"/><span id="hora_p<?php echo $co++; ?>"><?php echo $r->fecha_p ?></span>
-                                                                </span></button>
-                                                            </a>
+    <?php foreach($this->model->ListarMesa() as $r): ?>
+    
+        <div class="mesa-container">
+            <?php if ($r->id_catg == $c->id_catg AND $r->estado == 'a') { ?>
+                <a href="#" onclick="registrarMesa(<?php echo $r->id_mesa.',\''. $r->nro_mesa.'\',\''.$r->desc_m.'\''; ?>);">
+                    <img src="assets/img/mesalibre.png" alt="Mesa <?php echo $r->nro_mesa ?>" class="mesa-btn">
+                </a>
+            <?php } elseif ($r->id_catg == $c->id_catg AND $r->estado == 'p') { ?>
+                <a href="pedido_mesa.php?Cod=<?php echo $r->id_pedido ?>">
+                    <img src="assets/img/mesapago.png" alt="Mesa <?php echo $r->nro_mesa ?>" class="mesa-btn">
+                </a>
+            <?php } elseif ($r->id_catg == $c->id_catg AND $r->estado == 'i') { ?>
+                <a href="pedido_mesa.php?Cod=<?php echo $r->id_pedido ?>">
+                    <img src="assets/img/mesaocupada.png" alt="Mesa <?php echo $r->nro_mesa ?>" class="mesa-btn">
+                </a>
+            <?php } ?>
+            <p class="mesa-label">Mesa <?php echo $r->nro_mesa ?></p>
+        </div>
+    
+    <?php endforeach; ?>
 
-                                                        <?php } elseif ($r->id_catg == $c->id_catg AND $r->estado == 'i') { ?>
-                                                            
-                                                            <a href="pedido_mesa.php?Cod=<?php echo $r->id_pedido ?>">
-                                                                <button style="width: 122px" class="btn btn-danger dim btn-large-dim" type="button"> <?php echo $r->nro_mesa ?><span class="span-b"><i class="fa fa-clock-o"></i>&nbsp;<input type="hidden" name="hora_pe[]" value="<?php echo $r->fecha_p ?>"/><span id="hora_p<?php echo $co++; ?>"><?php echo $r->fecha_p ?></span>
-                                                                </span></button>
-                                                            </a>
-                                                            
-                                                        <?php } ?>
+<?php } else { ?>
 
-                                                    <?php endforeach; ?>
+    <?php foreach($this->model->ListarMesa() as $r): ?>
+    
+        <div class="mesa-container">
+            <?php if ($r->id_catg == $c->id_catg AND $r->estado == 'a') { ?>
+                <img src="assets/img/mesalibre.png" alt="Mesa <?php echo $r->nro_mesa ?>" class="mesa-btn" onclick="nuevoPed(<?php echo $r->id_mesa.',\''. $r->nro_mesa.'\',\''. $r->desc_m.'\''; ?>)">
+            <?php } elseif ($r->id_catg == $c->id_catg AND $r->estado == 'p') { ?>
+                <img src="assets/img/mesapago.png" alt="Mesa <?php echo $r->nro_mesa ?>" class="mesa-btn" onclick="listarPedidos(1,<?php echo $r->id_pedido.',\''. $r->nro_mesa.'\',\''.$r->desc_m.'\''; ?>)">
+            <?php } elseif ($r->id_catg == $c->id_catg AND $r->estado == 'i') { ?>
+                <img src="assets/img/mesaocupada.png" alt="Mesa <?php echo $r->nro_mesa ?>" class="mesa-btn" onclick="listarPedidos(1,<?php echo $r->id_pedido.',\''. $r->nro_mesa.'\',\''.$r->desc_m.'\''; ?>)">
+            <?php } ?>
+            <p class="mesa-label">Mesa <?php echo $r->nro_mesa ?></p>
+        </div>
 
-                                                <?php } else { ?>
+    <?php endforeach; ?>
 
-                                                    <?php foreach($this->model->ListarMesa() as $r): ?>
+<?php } ?>
 
-                                                        <?php if ($r->id_catg == $c->id_catg AND $r->estado == 'a') { ?>
-                                             
-                                                            <button style="width: 122px" class="btn btn-primary dim btn-large-dim" onclick="nuevoPed(<?php echo $r->id_mesa.',\''. $r->nro_mesa.'\',\''. $r->desc_m.'\''; ?>)"><?php echo $r->nro_mesa ?></button>
-                                                    
-                                                        <?php } elseif ($r->id_catg == $c->id_catg AND $r->estado == 'p') { ?>
-                                                            
-                                                            <button style="width: 122px" class="btn btn-info dim btn-large-dim" onclick="listarPedidos(1,<?php echo $r->id_pedido.',\''. $r->nro_mesa.'\',\''.$r->desc_m.'\''; ?>)"> <?php echo $r->nro_mesa ?>
-                                                            <span class="span-b"><i class="fa fa-clock-o"></i>&nbsp;<input type="hidden" name="hora_pe[]" value="<?php echo $r->fecha_p ?>"/>
-                                                            <span id="hora_p<?php echo $co++; ?>"><?php echo $r->fecha_p ?></span>
-                                                            </span>
-                                                            </button>
+</div>
 
-                                                        <?php } elseif ($r->id_catg == $c->id_catg AND $r->estado == 'i') { ?>
-                                                            
-                                                            <button style="width: 122px" class="btn btn-danger dim btn-large-dim" onclick="listarPedidos(1,<?php echo $r->id_pedido.',\''. $r->nro_mesa.'\',\''.$r->desc_m.'\''; ?>)"> <?php echo $r->nro_mesa ?>
-                                                            <span class="span-b"><i class="fa fa-clock-o"></i>&nbsp;<input type="hidden" name="hora_pe[]" value="<?php echo $r->fecha_p ?>"/>
-                                                            <span id="hora_p<?php echo $co++; ?>"><?php echo $r->fecha_p ?></span>
-                                                            </span>
-                                                            </button>
-                                                            
-                                                        <?php } ?>
 
-                                                    <?php endforeach; ?>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #f2e5d5;
+}
 
-                                                <?php } ?>
+/* Fondo cafetería */
+.tab-fondo {
+  background: url('assets/img/fondo_cafeteria.jpg') no-repeat center bottom;
+  background-size: cover;
+  background-color: #f2e5d5;
+  min-height: 650px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Contenedor de mesas al fondo */
+.mesas-area {
+  position: absolute;
+  bottom: 30px; /* ajusta este valor según cuánto quieras subirlas o bajarlas */
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+/* Mesas */
+.mesa-container {
+  display: inline-block;
+  text-align: center;
+  margin: 10px;
+  background: transparent;
+}
+
+.mesa-btn {
+  width: 180px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  background: transparent;
+  border: none;
+}
+
+.mesa-btn:hover {
+  transform: scale(1.05);
+}
+
+.mesa-label {
+    margin-top: 5px;
+    font-weight: 900; /* más gruesa que bold */
+    color: #000000ff;      /* blanco para resaltar */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* sombra para que destaque sobre el fondo */
+    font-size: 16px;  /* opcional, más grande si quieres */
+}
+
+/* Asegura transparencia total en las pestañas */
+.tab-fondo .tab-pane,
+.tab-fondo .card,
+.tab-fondo .card-body,
+.tab-fondo .tab-content,
+.tab-fondo .panel,
+.tab-fondo .panel-body {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+</style>
+
+
                                                 
                                             </div>
                                         </div>
