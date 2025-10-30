@@ -1,38 +1,37 @@
 <?php
+// No debe haber ningún espacio antes de este <?php
+
+// Configuración de errores (solo para desarrollo, quitar en producción)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+// Inicia sesión
 session_start();
-if(isset($_SESSION["datosusuario"])){
+
+// Verificar si hay usuario
+if(!isset($_SESSION["datosusuario"])){
+    header("location: index.php");
+    exit;
+}
+
 $almm = $_SESSION["datosusuario"];
 foreach ($almm as $reg) {
-if($reg["id_rol"] == 1 OR $reg["id_rol"] == 2){
-}else{
-    header("location: index.php");
-}}}else{
-    header("location: index.php");
+    if(!($reg["id_rol"] == 1 || $reg["id_rol"] == 2)){
+        header("location: index.php");
+        exit;
+    }
 }
-?>
 
-<?php
+// Cargar controlador
 require_once 'controller/informes/ventas/inf_ventas.controller.php';
 
-// Todo esta lógica hara el papel de un FrontController
-if(!isset($_REQUEST['c'])){
-    $controller = new InformeController();
-    $controller->Index();    
-} else {
-    
-    // Obtenemos el controlador que queremos cargar
-    $controller = $_REQUEST['c'] . 'Controller';
-    $accion     = isset($_REQUEST['a']) ? $_REQUEST['a'] : 'Index';
-    
-    
-    // Instanciamos el controlador
-    $controller = new $controller();
-    
-    // Llama la accion
-    call_user_func( array( $controller, $accion ) );
-}
+// Determinar controlador y acción
+$controllerName = isset($_REQUEST['c']) ? $_REQUEST['c'] . 'Controller' : 'InformeController';
+$accion = isset($_REQUEST['a']) ? $_REQUEST['a'] : 'Index';
 
-?>
+// Instanciar controlador
+$controller = new $controllerName();
+
+// Llamar a la acción
+call_user_func([$controller, $accion]);
