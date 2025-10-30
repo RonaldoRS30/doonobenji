@@ -77,19 +77,19 @@
                     <li id="clientes">
                         <a href="lista_tm_clientes.php"><i class="fa fa-group"></i> <span class="nav-label">Clientes</span></a>
                     </li>
-                    <li id="compras">
+                    <!-- <li id="compras">
                         <a href="#"><i class="fa fa-shopping-cart"></i> <span class="nav-label">Compras</span><span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li id="c-compras"><a href="lista_comp.php"> Todas las compras</a></li>
                             <li id="c-proveedores"><a href="lista_comp_prov.php"> Proveedores</a></li>
                         </ul>
-                    </li>
-                    <li id="creditos">
+                    </li> -->
+                    <!-- <li id="creditos">
                         <a href="#"><i class="fa fa-credit-card"></i> <span class="nav-label">Creditos</span><span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li id="cr-compras"><a href="lista_creditos_comp.php"> Compras</a></li>
                         </ul>
-                    </li>
+                    </li> -->
                     <?php } ?>
                     <?php if($reg['id_rol'] == 1) { ?>
                     <li id="inventario">
@@ -100,13 +100,13 @@
                             <li id="i-entsal"><a href="lista_inv_entsal.php"> Entradas - Salidas</a></li>
                         </ul>
                     </li>
-                    <li id="facturacion">
+                    <!-- <li id="facturacion">
                         <a href="#"><i class="fa fa-cog"></i> <span class="nav-label">Facturaci&oacute;n</span><span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li id="c-config_electronica"><a href="config_electronica.php"> Configuraci&oacute;n</a></li>
                             <li id="c-facturacion_electronica"><a href="config_electronica.php?c=Facturacion&a=listarDocumentos"> Documentos Electr&oacute;nicos</a></li>
                         </ul>
-                    </li>
+                    </li> -->
                     <li id="informes">
                         <a href="lista_tm_informes.php"><i class="fa fa-list-ul"></i> <span class="nav-label">Informes</span></a>
                     </li>
