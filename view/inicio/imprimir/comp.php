@@ -45,10 +45,10 @@ foreach($de as $reg) {
      }else{
      */
 $pathimagen = "assets/img";
-$archivo = $pathimagen . "/" . $reg['logo'] . ".png"; // <-- agregamos .png
+$archivo = $pathimagen . "/" . $reg['logo']; // <-- agregamos .png
 
 if(file_exists($archivo)){
-    $pdf->Image($archivo, 5, 6, 65, 15, 'PNG');
+    $pdf->Image($archivo, 5, 6, 65, 15, 'JPG');
 } else {
     echo "No se encontró la imagen: $archivo";
     exit;

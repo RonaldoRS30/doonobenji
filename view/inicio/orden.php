@@ -181,8 +181,8 @@
                                 <div class="form-group">
                                     <label>Tipo Documento</label>
                                     <select name="tipo_doc" id="tipo_doc" class="selectpicker form-control" data-live-search-style="begins" data-live-search="true" title="Seleccionar" autocomplete="off">
-                                        <option value="1">BOLETA</option>
-                                        <option value="2">FACTURA</option>
+                                        <!-- <option value="1">BOLETA</option>
+                                        <option value="2">FACTURA</option> -->
                                         <option value="3">TICKET</option>
                                     </select>
                                 </div>
