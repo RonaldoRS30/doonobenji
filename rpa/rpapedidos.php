@@ -143,10 +143,10 @@ try {
 
     // Datos del correo
     $mail->setFrom('jhordanroly22@gmail.com', 'Sistema DoonoBenji');
-    $mail->addAddress('jhordanroly22@gmail.com', 'Jhordan Roly');
+    $mail->addAddress('roromans@ucvvirtual.edu.pe', 'Ronaldo');
     $mail->CharSet = 'UTF-8';
     $mail->Subject = '📦 Reporte de Pedidos con Retraso - ' . date('d/m/Y');
-    $mail->Body = "Hola Jhordan,\n\nAdjunto el reporte PDF con los pedidos que tuvieron retraso.\n\nSaludos,\nTu RPA 🤖";
+    $mail->Body = "Hola Ronaldo,\n\nAdjunto el reporte PDF con los pedidos que tuvieron retraso.\n\nSaludos,\nTu RPA 🤖";
     $mail->addAttachment($rutaArchivo);
 
     $mail->send();
