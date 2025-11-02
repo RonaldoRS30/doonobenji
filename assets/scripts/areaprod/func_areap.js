@@ -68,11 +68,9 @@ var tiempoTotal = (minutos * 60 + segundos) * item.cantidad;      // total en se
 
 // Obtener la fecha de pedido como objeto Date
 var fechaPedido = new Date(item.fecha_pedido);
-fechaPedido = new Date(fechaPedido.getTime() - (fechaPedido.getTimezoneOffset() * 60000));
 
-// Obtener hora actual local
+// Obtener diferencia en segundos entre ahora y la fecha de pedido
 var ahora = new Date();
-ahora = new Date(ahora.getTime() - (ahora.getTimezoneOffset() * 60000));
 var segundosTranscurridos = Math.floor((ahora - fechaPedido) / 1000);
 
 // Calcular tiempo restante
