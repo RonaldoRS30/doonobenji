@@ -78,6 +78,17 @@ var tiempoRestante = tiempoTotal - segundosTranscurridos;
 if(tiempoRestante < 0) tiempoRestante = 0; // si ya pasó, mostrar 0
 
 
+// 🔍 LOGS DE DEPURACIÓN
+console.log('⏱️ item:', item);
+console.log('⏱️ tiempostandar:', item.tiempostandar);
+console.log('⏱️ minutos:', minutos, 'segundos:', segundos);
+console.log('⏱️ cantidad:', item.cantidad);
+console.log('⏱️ tiempoTotal (s):', tiempoTotal);
+console.log('📅 fechaPedido:', fechaPedido.toISOString());
+console.log('🕒 ahora:', ahora.toISOString());
+console.log('⚡ segundosTranscurridos:', segundosTranscurridos);
+console.log('⏳ tiempoRestante (s):', tiempoRestante);
+
     		$('#list_pedidos_mesa')
 				.append(
 					$('<li class="success-element limost"/>')
