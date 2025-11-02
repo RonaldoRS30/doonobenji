@@ -33,17 +33,10 @@ var nropedidosMesa = function(){
 	})
 }
 
-function obtenerHoraLima() {
-  // Hora actual en UTC (en milisegundos)
-  var ahoraUTC = new Date().getTime() + (new Date().getTimezoneOffset() * 60000);
-
-  // Desfase de Lima = -5 horas respecto a UTC
-  var limaOffset = -5 * 60 * 60000;
-
-  // Nueva fecha ajustada a Lima
-  return new Date(ahoraUTC + limaOffset);
+function obtenerHoraLima(fechaISO = null) {
+  let fechaUTC = fechaISO ? new Date(fechaISO) : new Date();
+  return new Date(fechaUTC.getTime() - (5 * 60 * 60 * 1000));
 }
-
 var pedidosMesa = function(){
 	moment.locale('es');
 	$('#list_pedidos_mesa').empty();
@@ -78,7 +71,7 @@ var segundos = Math.round((item.tiempostandar - minutos) * 60);   // parte decim
 var tiempoTotal = (minutos * 60 + segundos) * item.cantidad;      // total en segundos
 
 // Obtener la fecha de pedido como objeto Date
-var fechaPedido = new Date(item.fecha_pedido);
+var fechaPedido = new obtenerHoraLima(item.fecha_pedido);
 
 // Obtener diferencia en segundos entre ahora y la fecha de pedido
 var ahora = obtenerHoraLima();
