@@ -33,10 +33,6 @@ var nropedidosMesa = function(){
 	})
 }
 
-function obtenerHoraLima(fechaISO = null) {
-  let fechaUTC = fechaISO ? new Date(fechaISO) : new Date();
-  return new Date(fechaUTC.getTime() - (5 * 60 * 60 * 1000));
-}
 var pedidosMesa = function(){
 	moment.locale('es');
 	$('#list_pedidos_mesa').empty();
@@ -71,10 +67,10 @@ var segundos = Math.round((item.tiempostandar - minutos) * 60);   // parte decim
 var tiempoTotal = (minutos * 60 + segundos) * item.cantidad;      // total en segundos
 
 // Obtener la fecha de pedido como objeto Date
-var fechaPedido = new obtenerHoraLima(item.fecha_pedido);
+var fechaPedido = new Date(item.fecha_pedido);
 
 // Obtener diferencia en segundos entre ahora y la fecha de pedido
-var ahora = obtenerHoraLima();
+var ahora = new Date();
 var segundosTranscurridos = Math.floor((ahora - fechaPedido) / 1000);
 
 // Calcular tiempo restante
@@ -562,6 +558,18 @@ var segundosTranscurridos = Math.floor((ahora - fechaPedido) / 1000);
 // Calcular tiempo restante
 var tiempoRestante = tiempoTotal - segundosTranscurridos;
 if(tiempoRestante < 0) tiempoRestante = 0; // si ya pasó, mostrar 0
+
+
+// 🔍 LOGS DE DEPURACIÓN
+console.log('⏱️ item:', item);
+console.log('⏱️ tiempostandar:', item.tiempostandar);
+console.log('⏱️ minutos:', minutos, 'segundos:', segundos);
+console.log('⏱️ cantidad:', item.cantidad);
+console.log('⏱️ tiempoTotal (s):', tiempoTotal);
+console.log('📅 fechaPedido:', fechaPedido.toISOString());
+console.log('🕒 ahora:', ahora.toISOString());
+console.log('⚡ segundosTranscurridos:', segundosTranscurridos);
+console.log('⏳ tiempoRestante (s):', tiempoRestante);
 
 
     		$('#list_pedidos_del')
