@@ -19,16 +19,6 @@
                             <h4 class="list-group-item-heading">Datos de la empresa</h4>
                             <p class="list-group-item-text">Modificar los datos de la empresa.</p>
                         </a>
-                        <!--
-                        <a class="list-group-item" href="lista_tm_tiendas.php">
-                            <h4 class="list-group-item-heading">Tiendas</h4>
-                            <p class="list-group-item-text">Creaci&oacute;n, modificaci&oacute;n.</p>
-                        </a>
-                        -->
-                        <a class="list-group-item" href="?c=Config&a=IndexTD">
-                            <h4 class="list-group-item-heading">Tipo de Documentos</h4>
-                            <p class="list-group-item-text">Modificar los tipos de documentos.</p>
-                        </a>
                         <a class="list-group-item" href="lista_tm_usuarios.php">
                             <h4 class="list-group-item-heading">Usuarios / Roles</h4>
                             <p class="list-group-item-text">Creaci&oacute;n, modificaci&oacute;n.</p>
@@ -66,15 +56,8 @@
         </div>
         <div class="col-sm-4">
             <div class="ibox">
-                <div class="ibox-title">
-                    <h5><i class="fa fa-cogs"></i> Otros ajustes</h5>
-                </div>
                 <div class="ibox-content no-padding">
                     <div class="list-group">
-                        <a class="list-group-item" href="lista_tm_impresoras.php">
-                            <h4 class="list-group-item-heading">Impresoras</h4>
-                            <p class="list-group-item-text">Creaci&oacute;n, modificaci&oacute;n.</p>
-                        </a>
                     </div>
                 </div>
             </div>

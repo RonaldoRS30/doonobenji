@@ -131,19 +131,6 @@
             </div>
         </div>
 
-        <div class="col-lg-3">
-            <div class="ibox float-e-margins">
-                <div class="ibox-title">
-                    <span><i class="fa fa-line-chart fa-1x pull-right"></i></span>
-                    <h5>Promedio de consumo</h5>
-                </div>
-                <div class="ibox-content">
-                    <h1 class="no-margins text-success" id="pro_mo"></h1>
-                    <div class="stat-percent font-bold text-success">para llevar</div>
-                    <small>en <span class="t_most"></span> venta(s)</small>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- MOZO Y PEDIDOS -->
@@ -483,11 +470,12 @@ body {
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
   margin-bottom: 30px;
   border: none;
-  transition: all 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease-in-out;
+  /* quitamos transform para que los pickers funcionen */
 }
 
+/* Solo sombra al hover, sin transform */
 .ibox:hover {
-  transform: translateY(-3px);
   box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
 }
 
@@ -516,6 +504,8 @@ body {
 /* Cuerpo del bloque */
 .ibox-content {
   padding: 22px 28px;
+  position: relative; /* importante para overlays internos */
+  z-index: 1;
 }
 
 /* Etiquetas de estadísticas */
@@ -599,6 +589,8 @@ h1.no-margins, h4, h3 {
   border: 1px solid #c5b49b;
   padding: 8px;
   background: #fffdf9;
+  position: relative;
+  z-index: 9999; /* asegura que aparezca sobre todo */
 }
 
 /* Botones del modal */
@@ -644,5 +636,6 @@ h1.no-margins, h4, h3 {
     font-size: 14px;
   }
 }
+
 </style>
 
