@@ -97,7 +97,7 @@ public function PedidoCancelar(){
 
     // Obtener datos del POST
     $cod_pedido     = $_POST['cod_pedido'];
-    $cod_tipe = isset($_POST['cod_tipe']) && $_POST['cod_tipe'] != '' ? $_POST['cod_tipe'] : 2;
+    $cod_tipe = !empty($_POST['cod_tipe']) ? $_POST['cod_tipe'] : 1;
     $motivo_select  = $_POST['motivo_select'];
     $motivo_otro    = $_POST['motivo_otro'] ?? null;
     $usuario        = isset($_SESSION['usuario']) ? $_SESSION['usuario'] : 'sistema';

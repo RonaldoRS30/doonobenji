@@ -582,18 +582,31 @@ public function Desocupar(Pedido $data)
 {
     try
     {
-        // Si es mesa, llama su SP
+        // Si es mesa (1), desocupa con SP y actualiza todo aquí mismo
         if ($data->__GET('cod_tipe') == 1) {
-            $consulta = "call usp_restDesocuparMesa(:flag, :idPed);";
+
+            // SP
+            $consulta = "CALL usp_restDesocuparMesa(:flag, :idPed)";
             $arrayParam = [
                 ':flag' => 1,
                 ':idPed' => $data->__GET('cod_pede')
             ];
             $st = $this->conexionn->prepare($consulta);
             $st->execute($arrayParam);
+            $st->closeCursor(); // ← IMPORTANTE
+
+            // Actualiza pedido
+            $sql = "UPDATE tm_pedido SET estado = 'i' WHERE id_pedido = ?";
+            $this->conexionn->prepare($sql)->execute([$data->__GET('cod_pede')]);
+
+            // Actualiza detalle
+            $sql2 = "UPDATE tm_detalle_pedido SET estado = 'i' WHERE id_pedido = ?";
+            $this->conexionn->prepare($sql2)->execute([$data->__GET('cod_pede')]);
+
+            return; // ← Ya acabó
         }
 
-        // Esto SIEMPRE corre: (mesa, delivery, recojo)
+        // Si NO es mesa (delivery/recojo)
         $sql = "UPDATE tm_pedido SET estado = 'i' WHERE id_pedido = ?";
         $this->conexionn->prepare($sql)->execute([$data->__GET('cod_pede')]);
 
@@ -604,6 +617,7 @@ public function Desocupar(Pedido $data)
         die($e->getMessage());
     }
 }
+
 
 
 public function InsertarMotivoCancelacion(MotivoCancelacion $data)
