@@ -578,28 +578,33 @@ class InicioModel
         }
     }
 
-    //DESOCUPAR MESA
-    public function Desocupar(Pedido $data)
+public function Desocupar(Pedido $data)
+{
+    try
     {
-        try
-        {
-            if($data->__GET('cod_tipe') == 1){
-                $consulta = "call usp_restDesocuparMesa( :flag, :idPed);";
-                $arrayParam =  array(
-                    ':flag' => 1,
-                    ':idPed' =>  $data->__GET('cod_pede')
-                );
-                $st = $this->conexionn->prepare($consulta);
-                $st->execute($arrayParam);
-            } elseif($data->__GET('cod_tipe') == 2 OR $data->__GET('cod_tipe') == 3){
-                $sql = "UPDATE tm_pedido SET estado = 'i' WHERE id_pedido = ?";
-                $this->conexionn->prepare($sql)->execute(array($data->__GET('cod_pede')));
-            }
-        } catch (Exception $e) 
-        {
-            die($e->getMessage());
+        // Si es mesa, llama su SP
+        if ($data->__GET('cod_tipe') == 1) {
+            $consulta = "call usp_restDesocuparMesa(:flag, :idPed);";
+            $arrayParam = [
+                ':flag' => 1,
+                ':idPed' => $data->__GET('cod_pede')
+            ];
+            $st = $this->conexionn->prepare($consulta);
+            $st->execute($arrayParam);
         }
+
+        // Esto SIEMPRE corre: (mesa, delivery, recojo)
+        $sql = "UPDATE tm_pedido SET estado = 'i' WHERE id_pedido = ?";
+        $this->conexionn->prepare($sql)->execute([$data->__GET('cod_pede')]);
+
+        $sql2 = "UPDATE tm_detalle_pedido SET estado = 'i' WHERE id_pedido = ?";
+        $this->conexionn->prepare($sql2)->execute([$data->__GET('cod_pede')]);
+
+    } catch (Exception $e) {
+        die($e->getMessage());
     }
+}
+
 
 public function InsertarMotivoCancelacion(MotivoCancelacion $data)
 {

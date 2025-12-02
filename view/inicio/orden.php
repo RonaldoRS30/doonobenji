@@ -488,7 +488,9 @@
 
         <div class="modal-footer">
           <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-danger"><i class="fa fa-ban"></i> Confirmar Cancelación</button>
+          <button type="button" id="btn-cancelar-confirmar" class="btn btn-danger">
+                <i class="fa fa-ban"></i> Confirmar Cancelación
+            </button>
         </div>
       </form>
     </div>
@@ -546,6 +548,35 @@
 </script>
 
 <script>
+
+    $("#btn-cancelar-confirmar").on("click", function () {
+
+    let idPedido = $("#cod_p_cancelar").val();
+
+    $.ajax({
+        type: "POST",
+        url: "?c=Inicio&a=PedidoCancelar",
+        data: $("#mdl-cancelar-orden form").serialize(),
+        success: function () {
+
+            // 🔥 ELIMINA TODOS LOS ITEMS QUE TENGAN ESE id_pedido
+            $(`li[data-id-pedido="${idPedido}"]`).fadeOut(300, function(){
+                $(this).remove();
+            });
+
+            // Cerrar modal
+            $("#mdl-cancelar-orden").modal("hide");
+
+            // Mensaje opcional
+            toastr.success("Pedido cancelado");
+        },
+        error: function(e){
+            console.log("Error al cancelar:", e);
+        }
+    });
+
+});
+
 
       document.getElementById('motivo_select').addEventListener('change', function() {
     var otro = document.getElementById('motivo_otro');
