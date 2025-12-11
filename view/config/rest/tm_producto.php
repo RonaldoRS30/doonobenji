@@ -127,10 +127,10 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="row">
-                            <div class="col-sm-6">
+                            <div class="col-sm-6" hidden>
                                 <label style="font-weight: 500"><input name="tipo_prod" id="transf" type="radio" value="1" class="flat-red" checked="true"> Transformado</label>
                             </div>
-                            <div class="col-sm-6 text-right">
+                            <div class="col-sm-6 text-right" hidden>
                                 <label style="font-weight: 500" id="l-credito"><input name="tipo_prod" id="ntransf" type="radio" value="2" class="flat-red"> No transformado</label>
                             </div>
                         </div>
@@ -263,10 +263,10 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-6" id="tp-1" style="display: none">
-                                <div class="checkbox checkbox-success">
+                                <div class="checkbox checkbox-success" hidden>
                                     <input type="checkbox" class="flat-green" name="id_rec" id="id_rec"/>
                                     <input type="hidden" name="id_receta" id="id_receta" value=""/>
-                                    <label for="checkbox3">Tiene receta</label>
+                                    <label for="checkbox3" hidden>Tiene receta</label>
                                 </div>
                             </div>
                         </div>

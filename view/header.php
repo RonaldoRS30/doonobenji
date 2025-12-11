@@ -96,8 +96,6 @@
                         <a href="#"><i class="fa fa-archive"></i> <span class="nav-label">Inventario</span><span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li id="i-stock"><a href="lista_inv_stock.php"> Stock</a></li>
-                            <li id="i-karval"><a href="lista_inv_kardexv.php"> Kardex Valorizado</a></li>
-                            <li id="i-entsal"><a href="lista_inv_entsal.php"> Entradas - Salidas</a></li>
                         </ul>
                     </li>
                     <!-- <li id="facturacion">
